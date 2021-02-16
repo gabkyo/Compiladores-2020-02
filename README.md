@@ -13,15 +13,27 @@ Partes:
 ## Estrutura de arquivos
 
 include (Arquivos de cabeçalho)
+
     Scanner
+
     Parser
+
     Analyzer
+
     Generator
+
 src (Arquivos de código fonte .c, .cpp e .l)
+
     Scanner
+
     Parser
+
     Analyzer
+
     Generator
+
     main.c
+
 bin (Programas executáveis e arquivos objeto)
+
 Makefile
