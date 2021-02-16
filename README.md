@@ -36,4 +36,6 @@ src (Arquivos de código fonte .c, .cpp e .l)
 
 bin (Programas executáveis e arquivos objeto)
 
+test (Arquivos de teste em C#)
+
 Makefile
