@@ -12,6 +12,7 @@
 int CheckIntType(long long value, char *suffix);
 long long TreatIntString(char *text);
 long long TreatHexString(char *text);
+int CheckRealType(char *text);
 
 %}
 
@@ -184,6 +185,8 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 {sign}?({hex_integer}"L"|{hex_integer}"l") { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, "L"); }
 {sign}?({hex_integer}"UL"|{hex_integer}"uL"|{hex_integer}"Ul"|{hex_integer}"ul"|{hex_integer}"LU"|{hex_integer}"lU"|{hex_integer}"Lu"|{hex_integer}"lu") { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, "UL"); }
 
+{sign}?{real_literal} { return CheckRealType(yytext); }
+
 %%
 
 %{
@@ -236,7 +239,7 @@ long long TreatIntString(char *text)
 {
     char *letterPtr = text;
     int digits = 0;
-    while (IS_DIGIT(*letterPtr))
+    while (IS_DIGIT(*letterPtr) || IS_SIGN(*letterPtr))
     {
         ++digits;
         ++letterPtr;
@@ -250,18 +253,41 @@ long long TreatIntString(char *text)
 
 long long TreatHexString(char *text)
 {
-    char *letterPtr = text;
+    char *letter = text;
     int digits = 0;
     long long result = 0;
-    while (IS_DIGIT(*letterPtr) || IS_HIGHCASE_HEX(*letterPtr) || IS_LOWCASE_HEX(*letterPtr) || *letterPtr == 'x' || *letterPtr == 'X')
+    while (IS_DIGIT(*letter) || IS_HIGHCASE_HEX(*letter) || IS_LOWCASE_HEX(*letter) || *letter == 'x' || *letter == 'X' || IS_SIGN(*letter))
     {
         ++digits;
-        ++letterPtr;
+        ++letter;
     }
     char *number = malloc(digits * sizeof(char));
     number = strcpy(number, text, digits * sizeof(char));
     result = (long long)strtol(number, 0);
     return result;
+}
+
+
+
+int CheckRealType(char *text)
+{
+    /**
+    Divide text in the following parts:
+        -> Number sign (optional);
+        -> Integer part of the number;
+        -> Fractional part of the number;
+        -> Exponent symbol (optional);
+        -> Exponent sign (optional);
+        -> Exponent number (optional);
+        -> Type suffix (optional);
+
+    Return possibilities:
+        FLOAT_VAL
+        DOUBLE_VAL
+        DECIMAL_VAL
+    */
+
+    
 }
 
 %}
