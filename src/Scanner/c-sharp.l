@@ -11,8 +11,15 @@
 
 int CheckIntType(long long value, char *suffix);
 long long TreatIntString(char *text);
+long long TreatHexString(char *text);
 
 %}
+
+identifier ([a..z]|[A..Z]|'_')([a..z]|[A..Z]|[0..9]|'_')*
+
+identifier_with_at "@"{identifier}
+
+hex_integer {(0x|0X)([0..9]|[a..f]|[A..F])}
 
 comment {single_line_comment}|{delimited_comment}
 
@@ -25,8 +32,6 @@ delimited_comment_section '/''*'*{not_slash_or_asterisk}
 not_slash_or_asterisk (^'/'^'*')*
 
 tokens {identifier}|{keyword}|{integer_literal}|{real_literal}|{character_literal}|{string_literal}|{interpolated_string_literal}|{operator_or_punctuator}
-
-identifier ([a..z]|[A..Z]|'_')([a..z]|[A..Z]|[0..9]|'_')*
 
 literal {integer_literal}|{real_literal}|{character_literal}|{string_literal}|{boolean_literal}|{null_literal}
 
@@ -59,6 +64,8 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 %%
 
 {comment} { /* ignoring comments */ }
+
+{identifier_with_at} { return IDENTIFIER; }
 
 "abstract" { return ABSTRACT; }
 "as" { return AS; }
@@ -135,10 +142,15 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 
 {identifier} { return IDENTIFIER; }
 
-[0-9]+ { int value = atoll(yytext); return CheckIntType(value, NULL); }
-([0-9]+"U"|[0-9]+"u") { int value = atoll(TreatIntString(yytext)); return CheckIntType(value, "U"); }
-([0-9]+"L"|[0-9]+"l") { int value = atoll(TreatIntString(yytext)); return CheckIntType(value, "L"); }
-([0-9]+"UL"|[0-9]+"uL"|[0-9]+"Ul"|[0-9]+"ul"|[0-9]+"LU"|[0-9]+"lU"|[0-9]+"Lu"|[0-9]+"lu") { int value = atoll(TreatIntString(yytext)); return CheckIntType(value, "UL"); }
+[0-9]+ { long long value = atoll(yytext); return CheckIntType(value, NULL); }
+([0-9]+"U"|[0-9]+"u") { long long value = atoll(TreatIntString(yytext)); return CheckIntType(value, "U"); }
+([0-9]+"L"|[0-9]+"l") { long long value = atoll(TreatIntString(yytext)); return CheckIntType(value, "L"); }
+([0-9]+"UL"|[0-9]+"uL"|[0-9]+"Ul"|[0-9]+"ul"|[0-9]+"LU"|[0-9]+"lU"|[0-9]+"Lu"|[0-9]+"lu") { long long value = atoll(TreatIntString(yytext)); return CheckIntType(value, "UL"); }
+
+{hex_integer} { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, NULL); }
+({hex_integer}"U"|{hex_integer}"u") { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, "U"); }
+({hex_integer}"L"|{hex_integer}"l") { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, "L"); }
+({hex_integer}"UL"|{hex_integer}"uL"|{hex_integer}"Ul"|{hex_integer}"ul"|{hex_integer}"LU"|{hex_integer}"lU"|{hex_integer}"Lu"|{hex_integer}"lu") { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, "UL"); }
 
 %%
 
@@ -176,21 +188,21 @@ int CheckIntType(long long value, char *suffix)
     return -1;
 }
 
-static int IsDigit(char c)
-{
-    return '0' <= c && c <= '9';
-}
+#define IS_DIGIT(c) ('0' <= c && c <= '9')
 
-static int IsHexDigit(char c)
-{
-    return ('0' <= c && c <= '9') || ('A' <= c && c <= 'F') || ('a' <= c && c <= 'f');
-}
+#define IS_HIGHCASE_HEX(c) ('A' <= c && c <= 'F')
+
+#define IS_LOWCASE_HEX(c) ('a' <= c && c <= 'f')
+
+#define CONVERT_HIGHCASE_HEX(c) (c - 55)
+
+#define CONVERT_LOWCASE_HEX(c) (c - 87)
 
 long long TreatIntString(char *text)
 {
     char *letterPtr = text;
     int digits = 0;
-    while (IsDigit(*letterPtr))
+    while (IS_DIGIT(*letterPtr))
     {
         ++digits;
         ++letterPtr;
@@ -199,6 +211,22 @@ long long TreatIntString(char *text)
     number = strcpy(number, text, digits * sizeof(char));
     long long result = atoll(number);
     free(number);
+    return result;
+}
+
+long long TreatHexString(char *text)
+{
+    char *letterPtr = text;
+    int digits = 0;
+    long long result = 0;
+    while (IS_DIGIT(*letterPtr) || IS_HIGHCASE_HEX(*letterPtr) || IS_LOWCASE_HEX(*letterPtr) || *letterPtr == 'x' || *letterPtr == 'X')
+    {
+        ++digits;
+        ++letterPtr;
+    }
+    char *number = malloc(digits * sizeof(char));
+    number = strcpy(number, text, digits * sizeof(char));
+    result = (long long)strtol(number, 0);
     return result;
 }
 

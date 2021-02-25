@@ -1,12 +1,7 @@
-using System;
-
-namespace Test
+public class Test1
 {
-    public class Test1
+    public static void Main(string[] Args)
     {
-        public static void Main(string[] args)
-        {
-            
-        }
+        
     }
 }
