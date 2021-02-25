@@ -25,25 +25,11 @@ comment {single_line_comment}|{delimited_comment}
 
 single_line_comment "//".*
 
-delimited_comment "/*"{delimited_comment_section}*'*'+"/"
+delimited_comment "/"\*{delimited_comment_section}*\*+"/"
 
 delimited_comment_section '/''*'*{not_slash_or_asterisk}
 
 not_slash_or_asterisk (^'/'^'*')*
-
-tokens {identifier}|{keyword}|{integer_literal}|{real_literal}|{character_literal}|{string_literal}|{interpolated_string_literal}|{operator_or_punctuator}
-
-literal {integer_literal}|{real_literal}|{character_literal}|{string_literal}|{boolean_literal}|{null_literal}
-
-boolean_literal 'true'|'false'
-
-integer_literal {decimal_integer_literal}|{hexadecimal_integer_literal}
-
-decimal_integer_literal [0..9]+{integer_type_suffix}
-
-hexadecimal_integer_literal (0x|0X)([0..9]|[a..f]|[A..F])+{integer_type_suffix}
-
-integer_type_suffix 'U'|'u'|'L'|'l'|'UL'|'Ul'|'uL'|'ul'|'LU'|'Lu'|'lU'|'lu'
 
 real_literal ([0..9]+'.'[0..9]+{exponent_part}?{real_type_suffix}?)|('.'[0..9]+{exponent_part}?{real_type_suffix}?)|([0..9]+{exponent_part}{real_type_suffix}?)|([0..9]+{real_type_suffix})
 
@@ -67,6 +53,52 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 
 {identifier_with_at} { return IDENTIFIER; }
 
+"(" { return START_PAR; }
+")" { return END_PAR; }
+"{" { return START_CURLY; }
+"}" { return END_CURLY; }
+"[" { return START_BRCKT; }
+"]" { return END_BRCKT; }
+"+" { return ADD; }
+"-" { return SUB; }
+"/" { return DIV; }
+"*" { return MUL; }
+"%" { return MOD; }
+"!" { return NOT; }
+"?" { return QMARK; }
+"^" { return CIRCUMFLEX; }
+":" { return COLON; }
+";" { return SEMI; }
+"," { return COMMA; }
+"." { return DOT; }
+"=" { return ASSIGN; }
+"<" { return LESS_THEN; }
+">" { return GREATER_THEN; }
+"&" { return BIT_AND; }
+"|" { return BIT_OR; }
+"~" { return BIT_NOT; }
+"==" { return EQ; }
+">=" { return GEQ; }
+"<=" { return LEQ; }
+"!=" { return NOT_EQ; }
+"+=" { return ADD_ASSIGN; }
+"-=" { return SUB_ASSIGN; }
+"*=" { return MUL_ASSIGN; }
+"/=" { return DIV_ASSIGN; }
+"%=" { return MOD_ASSIGN; }
+"&=" { return BIT_AND_ASSIGN; }
+"|=" { return BIT_OR_ASSIGN; }
+"^=" { return CIRCUMFLEX_ASSIGN; }
+"<<" { return LEFT_SHIFT; }
+">>" { return RIGHT_SHIFT; }
+"&&" { return AND; }
+"||" { return OR; }
+"??" { return DOUBLE_QMARK; }
+"++" { return INCREMENT; }
+"--" { return DECREMENT; }
+"=>" { return LAMBDA; }
+"<<=" { return LEFT_SHIFT_ASSIGN; }
+">>=" { return RIGHT_SHIFT_ASSIGN; }
 "abstract" { return ABSTRACT; }
 "as" { return AS; }
 "base" { return BASE; }
@@ -89,7 +121,7 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 "event" { return EVENT; }
 "explicit" { return EXPLICIT; }
 "extern" { return EXTERN; }
-"false" { return FALSE; }
+"false" { return FALSE_VAL; }
 "fixed" { return FIXED; }
 "float" { return FLOAT_TYPE; }
 "for" { return FOR; }
@@ -128,7 +160,7 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 "switch" { return SWITCH; }
 "this" { return THIS; }
 "throw" { return THROW; }
-"true" { return TRUE; }
+"true" { return TRUE_VAL; }
 "typeof" { return TYPEOF; }
 "uint" { return UINT_TYPE; }
 "ulong" { return ULONG_TYPE; }
@@ -142,15 +174,15 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 
 {identifier} { return IDENTIFIER; }
 
-[0-9]+ { long long value = atoll(yytext); return CheckIntType(value, NULL); }
-([0-9]+"U"|[0-9]+"u") { long long value = atoll(TreatIntString(yytext)); return CheckIntType(value, "U"); }
-([0-9]+"L"|[0-9]+"l") { long long value = atoll(TreatIntString(yytext)); return CheckIntType(value, "L"); }
-([0-9]+"UL"|[0-9]+"uL"|[0-9]+"Ul"|[0-9]+"ul"|[0-9]+"LU"|[0-9]+"lU"|[0-9]+"Lu"|[0-9]+"lu") { long long value = atoll(TreatIntString(yytext)); return CheckIntType(value, "UL"); }
+{sign}?[0-9]+ { long long value = atoll(yytext); return CheckIntType(value, NULL); }
+{sign}?([0-9]+"U"|[0-9]+"u") { long long value = atoll(TreatIntString(yytext)); return CheckIntType(value, "U"); }
+{sign}?([0-9]+"L"|[0-9]+"l") { long long value = atoll(TreatIntString(yytext)); return CheckIntType(value, "L"); }
+{sign}?([0-9]+"UL"|[0-9]+"uL"|[0-9]+"Ul"|[0-9]+"ul"|[0-9]+"LU"|[0-9]+"lU"|[0-9]+"Lu"|[0-9]+"lu") { long long value = atoll(TreatIntString(yytext)); return CheckIntType(value, "UL"); }
 
-{hex_integer} { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, NULL); }
-({hex_integer}"U"|{hex_integer}"u") { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, "U"); }
-({hex_integer}"L"|{hex_integer}"l") { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, "L"); }
-({hex_integer}"UL"|{hex_integer}"uL"|{hex_integer}"Ul"|{hex_integer}"ul"|{hex_integer}"LU"|{hex_integer}"lU"|{hex_integer}"Lu"|{hex_integer}"lu") { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, "UL"); }
+{sign}?{hex_integer} { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, NULL); }
+{sign}?({hex_integer}"U"|{hex_integer}"u") { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, "U"); }
+{sign}?({hex_integer}"L"|{hex_integer}"l") { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, "L"); }
+{sign}?({hex_integer}"UL"|{hex_integer}"uL"|{hex_integer}"Ul"|{hex_integer}"ul"|{hex_integer}"LU"|{hex_integer}"lU"|{hex_integer}"Lu"|{hex_integer}"lu") { long long value = atoll(TreatHexString(yytext)); return CheckIntType(value, "UL"); }
 
 %%
 
@@ -187,6 +219,8 @@ int CheckIntType(long long value, char *suffix)
 
     return -1;
 }
+
+#define IS_SIGN(c) (c == '+' || c == '-')
 
 #define IS_DIGIT(c) ('0' <= c && c <= '9')
 
