@@ -1,5 +1,19 @@
 /* Scanner for a C# 6.0 compiler generated with Flex */
 
+%{
+
+#include <stdlib.h>
+
+#define INT_MAX_VALUE   2147483647
+#define UINT_MAX_VALUE  4294967295
+#define LONG_MAX_VALUE  9223372036854775807
+#define ULONG_MAX_VALUE 18446744073709551615
+
+int CheckIntType(long long value, char *suffix);
+long long TreatIntString(char *text);
+
+%}
+
 comment {single_line_comment}|{delimited_comment}
 
 single_line_comment "//".*
@@ -13,8 +27,6 @@ not_slash_or_asterisk (^'/'^'*')*
 tokens {identifier}|{keyword}|{integer_literal}|{real_literal}|{character_literal}|{string_literal}|{interpolated_string_literal}|{operator_or_punctuator}
 
 identifier ([a..z]|[A..Z]|'_')([a..z]|[A..Z]|[0..9]|'_')*
-
-keyword 'abstract'|'as'|'base'|'bool'|'break'|'byte'|'case'|'catch'|'char'|'checked'|'class'|'const'|'continue'|'decimal'|'default'|'delegate'|'do'|'double'|'else'|'enum'|'event'|'explicit'|'extern'|'false'|'finally'|'fixed'|'float'|'for'|'foreach'|'goto'|'if'|'implicit'|'in'|'int'|'interface'|'internal'|'is'|'lock'|'long'|'namespace'|'new'|'null'|'object'|'operator'|'out'|'override'|'params'|'private'|'protected'|'public'|'readonly'|'ref'|'return'|'sbyte'|'sealed'|'short'|'sizeof'|'stackalloc'|'static'|'string'|'struct'|'switch'|'this'|'throw'|'true'|'try'|'typeof'|'uint'|'ulong'|'unchecked'|'unsafe'|'ushort'|'using'|'virtual'|'void'|'volatile'|'while'
 
 literal {integer_literal}|{real_literal}|{character_literal}|{string_literal}|{boolean_literal}|{null_literal}
 
@@ -47,19 +59,20 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 %%
 
 {comment} { /* ignoring comments */ }
+
 "abstract" { return ABSTRACT; }
 "as" { return AS; }
 "base" { return BASE; }
-"bool" { return BOOL; }
+"bool" { return BOOL_TYPE; }
 "break" { return BREAK; }
-"byte" { return BYTE; }
+"byte" { return BYTE_TYPE; }
 "case" { return CASE; }
-"char" { return CHAR; }
+"char" { return CHAR_TYPE; }
 "checked" { return CHECKED; }
 "class" { return CLASS; }
 "const" { return CONST; }
 "continue" { return CONTINUE; }
-"decimal" { return DECIMAL; }
+"decimal" { return DECIMAL_TYPE; }
 "default" { return DEFAULT; }
 "delegate" { return DELEGATE; }
 "do" { return DO; }
@@ -71,21 +84,21 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 "extern" { return EXTERN; }
 "false" { return FALSE; }
 "fixed" { return FIXED; }
-"float" { return FLOAT; }
+"float" { return FLOAT_TYPE; }
 "for" { return FOR; }
 "foreach" { return FOREACH; }
 "goto" { return GOTO; }
 "if" { return IF; }
 "implicit" { return IMPLICIT; }
 "in" { return IN; }
-"int" { return INT; }
+"int" { return INT_TYPE; }
 "interface" { return INTERFACE; }
 "internal" { return INTERNAL; }
 "is" { return IS; }
 "lock" { return LOCK; }
-"long" { return LONG; }
+"long" { return LONG_TYPE; }
 "new" { return NEW; }
-"null" { return NULL; }
+"null" { return NULL_VALUE; }
 "object" { return OBJECT; }
 "operator" { return OPERATOR; }
 "out" { return OUT; }
@@ -97,29 +110,96 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 "readonly" { return READONLY; }
 "ref" { return REF; }
 "return" { return RETURN; }
-"sbyte" { return SBYTE; }
+"sbyte" { return SBYTE_TYPE; }
 "sealed" { return SEALED; }
-"short" { return SHORT; }
+"short" { return SHORT_TYPE; }
 "sizeof" { return SIZEOF; }
 "stackalloc" { return STACKALLOC; }
 "static" { return STATIC; }
-"string" { return STRING; }
+"string" { return STRING_TYPE; }
 "struct" { return STRUCT; }
 "switch" { return SWITCH; }
 "this" { return THIS; }
 "throw" { return THROW; }
 "true" { return TRUE; }
 "typeof" { return TYPEOF; }
-"uint" { return UINT; }
-"ulong" { return ULONG; }
+"uint" { return UINT_TYPE; }
+"ulong" { return ULONG_TYPE; }
 "unchecked" { return UNCHECKED; }
 "unsafe" { return UNSAFE; }
-"ushort" { return USHORT; }
+"ushort" { return USHORT_TYPE; }
 "virtual" { return VIRTUAL; }
 "void" { return VOID; }
 "volatile" { return VOLATILE; }
 "while" { return WHILE; }
+
 {identifier} { return IDENTIFIER; }
 
+[0-9]+ { int value = atoll(yytext); return CheckIntType(value, NULL); }
+([0-9]+"U"|[0-9]+"u") { int value = atoll(TreatIntString(yytext)); return CheckIntType(value, "U"); }
+([0-9]+"L"|[0-9]+"l") { int value = atoll(TreatIntString(yytext)); return CheckIntType(value, "L"); }
+([0-9]+"UL"|[0-9]+"uL"|[0-9]+"Ul"|[0-9]+"ul"|[0-9]+"LU"|[0-9]+"lU"|[0-9]+"Lu"|[0-9]+"lu") { int value = atoll(TreatIntString(yytext)); return CheckIntType(value, "UL"); }
 
 %%
+
+%{
+
+int CheckIntType(long long value, char *suffix)
+{
+    value = llabs(value);
+
+    // If there's no suffix telling which type it is:
+    if (suffix == NULL)
+    {
+        // Comparing the value with the maximum size of each type to define the type that must be returned:
+        if (value <= INT_MAX_VALUE) return INT_VALUE;
+        else if (value <= UINT_MAX_VALUE) return UINT_VALUE;
+        else if (value <= LONG_MAX_VALUE) return LONG_VALUE;
+        else if (value <= ULONG_MAX_VALUE) return ULONG_VALUE;
+    }
+    else if (strcmp(suffix, "U") == 0)
+        goto start_from_unsigned;
+    else if (strcmp(suffix, "L") == 0)
+        goto start_from_long;
+    else if (strcmp(suffix, "Ul") == 0)
+        goto start_from_unsigned;
+
+    start_from_unsigned:
+    if (value <= UINT_MAX_VALUE) return UINT_VALUE;
+    
+    start_from_long:
+    if (value <= LONG_MAX_VALUE) return LONG_VALUE;
+    
+    start_from_ulong:
+    if (value <= ULONG_MAX_VALUE) return ULONG_VALUE;
+
+    return -1;
+}
+
+static int IsDigit(char c)
+{
+    return '0' <= c && c <= '9';
+}
+
+static int IsHexDigit(char c)
+{
+    return ('0' <= c && c <= '9') || ('A' <= c && c <= 'F') || ('a' <= c && c <= 'f');
+}
+
+long long TreatIntString(char *text)
+{
+    char *letterPtr = text;
+    int digits = 0;
+    while (IsDigit(*letterPtr))
+    {
+        ++digits;
+        ++letterPtr;
+    }
+    char *number = malloc(digits * sizeof(char));
+    number = strcpy(number, text, digits * sizeof(char));
+    long long result = atoll(number);
+    free(number);
+    return result;
+}
+
+%}
