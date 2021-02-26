@@ -7,7 +7,6 @@
 #define INT_MAX_VALUE   2147483647
 #define UINT_MAX_VALUE  4294967295
 #define LONG_MAX_VALUE  9223372036854775807
-#define ULONG_MAX_VALUE 18446744073709551615
 
 int CheckIntType(long long value, char *suffix);
 long long TreatIntString(char *text);
@@ -215,24 +214,19 @@ int CheckIntType(long long value, char *suffix)
     if (value <= UINT_MAX_VALUE) return UINT_VALUE;
     
     start_from_long:
-    if (value <= LONG_MAX_VALUE) return LONG_VALUE;
+    if (value > UINT_MAX_VALUE) return LONG_VALUE;
     
     start_from_ulong:
-    if (value <= ULONG_MAX_VALUE) return ULONG_VALUE;
+    if (value > LONG_MAX_VALUE) return ULONG_VALUE;
 
     return -1;
 }
 
 #define IS_SIGN(c) (c == '+' || c == '-')
-
 #define IS_DIGIT(c) ('0' <= c && c <= '9')
-
 #define IS_HIGHCASE_HEX(c) ('A' <= c && c <= 'F')
-
 #define IS_LOWCASE_HEX(c) ('a' <= c && c <= 'f')
-
 #define CONVERT_HIGHCASE_HEX(c) (c - 55)
-
 #define CONVERT_LOWCASE_HEX(c) (c - 87)
 
 long long TreatIntString(char *text)
@@ -267,27 +261,50 @@ long long TreatHexString(char *text)
     return result;
 }
 
-
+#define IS_EXP_SYMBOL(c) (c == 'e' || c == 'E')
+#define IS_FLOAT_SUFFIX(c) (c == 'f' || c == 'E')
+#define IS_DOUBLE_SUFFIX(c) (c == 'd' || c == 'D')
+#define IS_DECIMAL_SUFFIX(c) (c == 'm' || c == 'M')
+#define IS_REAL_CHAR(c) IS_DIGIT(c) || (c == '.') || IS_SIGN(c) || IS_EXP_SYMBOL(c) || IS_FLOAT_SUFFIX(c) || IS_DOUBLE_SUFFIX(c) || IS_DECIMAL_SUFFIX(c)
 
 int CheckRealType(char *text)
 {
     /**
-    Divide text in the following parts:
-        -> Number sign (optional);
-        -> Integer part of the number;
-        -> Fractional part of the number;
-        -> Exponent symbol (optional);
-        -> Exponent sign (optional);
-        -> Exponent number (optional);
-        -> Type suffix (optional);
+        Divide text in the following parts:
+            -> Number sign (optional);
+            -> Integer part of the number;
+            -> Fractional part of the number;
+            -> Exponent symbol (optional);
+            -> Exponent sign (optional);
+            -> Exponent number (optional);
+            -> Type suffix (optional);
 
-    Return possibilities:
-        FLOAT_VAL
-        DOUBLE_VAL
-        DECIMAL_VAL
+        Return possibilities:
+            FLOAT_VAL
+            DOUBLE_VAL
+            DECIMAL_VAL
     */
-
-    
+    char *letter = text;
+    long double sign = 1;
+    long double value = 0;
+    int chars = 0;
+    int offset = 0;
+    while (IS_REAL_CHAR(*letter))
+    {
+        if (IS_SIGN(*letter)) ++offset;
+        else if (IS_DIGIT(*letter) || *letter == '.')
+        {
+            ++chars;
+            ++letter;
+        }
+        else if (IS_FLOAT_SUFFIX(*letter) || IS_DOUBLE_SUFFIX(*letter) || IS_DECIMAL_SUFFIX(*letter)) break;
+    }
+    char *number = malloc(chars * sizeof(char));
+    number = strcpy(number, text + offset, chars * sizeof(char));
+    value = strtold(number);
+    if (value <= FLT_MAX) return FLOAT_VAL;
+    else if (value > FLT_MAX && value <= DBL_VAL) return DOUBLE_VAL;
+    else return DECIMAL_VAL;
 }
 
 %}
