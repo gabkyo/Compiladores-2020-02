@@ -1,7 +1,7 @@
 
 SRC_FILES := $(wildcard src/*.c) $(wildcard src/Scanner/*.c) $(wildcard src/Parser/*.c)
 
-INCLUDES := -Iinclude/Scanner -Iinclude/Parser
+INCLUDES := -Iinclude/ -Iinclude/Scanner/ -Iinclude/Parser/
 
 main: parser scanner
 	gcc $(INCLUDES) -o bin/csharp 
@@ -12,3 +12,5 @@ scanner:
 parser:
 	bison -o src/Parser/parser.c src/Parser/c-sharp.y --defines=include/Parser/parser.h
 
+precomp_header:
+	gcc include/pch.h

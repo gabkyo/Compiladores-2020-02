@@ -4,9 +4,13 @@
 
 #include <stdlib.h>
 
-#define INT_MAX_VALUE   2147483647
-#define UINT_MAX_VALUE  4294967295
-#define LONG_MAX_VALUE  9223372036854775807
+#define SBYTE_MAX_VALUE   127
+#define BYTE_MAX_VALUE  256
+#define SHORT_MAX_VALUE  32767
+#define USHORT_MAX_VALUE 65535
+#define INT_MAX_VALUE    2147483647
+#define UINT_MAX_VALUE   4294967295
+#define LONG_MAX_VALUE   9223372036854775807
 
 int CheckIntType(long long value, char *suffix);
 long long TreatIntString(char *text);
@@ -106,7 +110,7 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 "default" { return DEFAULT; }
 "delegate" { return DELEGATE; }
 "do" { return DO; }
-"double" { return DOUBLE; }
+"double" { return DOUBLE_TYPE; }
 "else" { return ELSE; }
 "enum" { return ENUM; }
 "event" { return EVENT; }
@@ -177,9 +181,12 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 
 {sign}?{real_literal} { return CheckRealType(yytext); }
 
-("'"."'"|"'\n'"|"'\t'"|"'\a'"|"'\0'"|"'\r'"|"'\b'"|"'\v'") { return CHAR_VAL; }
+("'"."'"|"'\\n'"|"'\\t'"|"'\\a'"|"'\\0'"|"'\\r'"|"'\\b'"|"'\\v'") { return CHAR_VAL; }
 
 (\".\"|\"(^\n)\") { return STRING_VAL; }
+
+"\n" { return ENTER; }
+"\0" { return END_OF_FILE; }
 
 %%
 
@@ -193,9 +200,13 @@ int CheckIntType(long long value, char *suffix)
     if (suffix == NULL)
     {
         // Comparing the value with the maximum size of each type to define the type that must be returned:
-        if (value <= INT_MAX_VALUE) return INT_VALUE;
-        else if (value <= UINT_MAX_VALUE) return UINT_VALUE;
-        else if (value <= LONG_MAX_VALUE) return LONG_VALUE;
+        if (value <= SBYTE_MAX_VALUE) return SBYTE_VAL;
+        else if (value <= BYTE_MAX_VALUE) return BYTE_VAL;
+        else if (value <= SHORT_MAX_VALUE) return SHORT_VAL;
+        else if (value <= USHORT_MAX_VALUE) return USHORT_VAL;
+        else if (value <= INT_MAX_VALUE) return INT_VAL;
+        else if (value <= UINT_MAX_VALUE) return UINT_VAL;
+        else if (value <= LONG_MAX_VALUE) return LONG_VAL;
         else if (value <= ULONG_MAX_VALUE) return ULONG_VALUE;
     }
     else if (strcmp(suffix, "U") == 0)
@@ -206,10 +217,10 @@ int CheckIntType(long long value, char *suffix)
         goto start_from_unsigned;
 
     start_from_unsigned:
-    if (value <= UINT_MAX_VALUE) return UINT_VALUE;
+    if (value <= UINT_MAX_VALUE) return UINT_VAL;
     
     start_from_long:
-    if (value > UINT_MAX_VALUE) return LONG_VALUE;
+    if (value > UINT_MAX_VALUE) return LONG_VAL;
     
     start_from_ulong:
     if (value > LONG_MAX_VALUE) return ULONG_VALUE;

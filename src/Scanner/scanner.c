@@ -2882,9 +2882,9 @@ int CheckIntType(long long value, char *suffix)
     if (suffix == NULL)
     {
         // Comparing the value with the maximum size of each type to define the type that must be returned:
-        if (value <= INT_MAX_VALUE) return INT_VALUE;
-        else if (value <= UINT_MAX_VALUE) return UINT_VALUE;
-        else if (value <= LONG_MAX_VALUE) return LONG_VALUE;
+        if (value <= INT_MAX_VALUE) return INT_VAL;
+        else if (value <= UINT_MAX_VALUE) return UINT_VAL;
+        else if (value <= LONG_MAX_VALUE) return LONG_VAL;
         else if (value <= ULONG_MAX_VALUE) return ULONG_VALUE;
     }
     else if (strcmp(suffix, "U") == 0)
@@ -2895,10 +2895,10 @@ int CheckIntType(long long value, char *suffix)
         goto start_from_unsigned;
 
     start_from_unsigned:
-    if (value <= UINT_MAX_VALUE) return UINT_VALUE;
+    if (value <= UINT_MAX_VALUE) return UINT_VAL;
     
     start_from_long:
-    if (value > UINT_MAX_VALUE) return LONG_VALUE;
+    if (value > UINT_MAX_VALUE) return LONG_VAL;
     
     start_from_ulong:
     if (value > LONG_MAX_VALUE) return ULONG_VALUE;
