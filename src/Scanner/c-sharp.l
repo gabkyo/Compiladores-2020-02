@@ -19,17 +19,7 @@ identifier ([a..z]|[A..Z]|'_')([a..z]|[A..Z]|[0..9]|'_')*
 
 identifier_with_at "@"{identifier}
 
-hex_integer {(0x|0X)([0..9]|[a..f]|[A..F])}
-
-comment {single_line_comment}|{delimited_comment}
-
-single_line_comment "//".*
-
-delimited_comment "/"\*{delimited_comment_section}*\*+"/"
-
-delimited_comment_section '/''*'*{not_slash_or_asterisk}
-
-not_slash_or_asterisk (^'/'^'*')*
+hex_integer (0x|0X)([0..9]|[a..f]|[A..F])
 
 real_literal ([0..9]+'.'[0..9]+{exponent_part}?{real_type_suffix}?)|('.'[0..9]+{exponent_part}?{real_type_suffix}?)|([0..9]+{exponent_part}{real_type_suffix}?)|([0..9]+{real_type_suffix})
 
@@ -39,17 +29,18 @@ sign ('+'|'-')
 
 real_type_suffix 'F'|'f'|'D'|'d'|'M'|'m'
 
-character_literal '\''{character}'\''
+/* character_literal '\''{character}'\''
 
 character .|{simple_escape_sequence}|{hexadecimal_escape_sequence}
 
 simple_escape_sequence '\\\''|'\\"'|'\\\\'|'\\0'|'\\a'|'\\b'|'\\f'|'\\n'|'\\r'|'\\t'|'\\v'
 
-hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([0..9]|[a..f]|[A..F])?([0..9]|[a..f]|[A..F])?
+hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([0..9]|[a..f]|[A..F])?([0..9]|[a..f]|[A..F])? */
 
 %%
 
-{comment} { /* ignoring comments */ }
+"//".* { /* singleline comments are ignored*/ }
+"/*""*"*(^"/"^"*")*"*"*"*/" { /* multiline comments are ignored */ }
 
 {identifier_with_at} { return IDENTIFIER; }
 
@@ -186,6 +177,10 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 
 {sign}?{real_literal} { return CheckRealType(yytext); }
 
+("'"."'"|"'\n'"|"'\t'"|"'\a'"|"'\0'"|"'\r'"|"'\b'"|"'\v'") { return CHAR_VAL; }
+
+(\".\"|\"(^\n)\") { return STRING_VAL; }
+
 %%
 
 %{
@@ -292,7 +287,7 @@ int CheckRealType(char *text)
     while (IS_REAL_CHAR(*letter))
     {
         if (IS_SIGN(*letter)) ++offset;
-        else if (IS_DIGIT(*letter) || *letter == '.')
+        else if (IS_DIGIT(*letter) || *letter == '.' || IS_EXP_SYMBOL(*letter))
         {
             ++chars;
             ++letter;

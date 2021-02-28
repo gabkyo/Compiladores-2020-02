@@ -1,5 +1,5 @@
 
-SRC_FILES := $(wildcard src/Scanner/*.c) $(wildcard src/Parser/*.c)
+SRC_FILES := $(wildcard src/*.c) $(wildcard src/Scanner/*.c) $(wildcard src/Parser/*.c)
 
 INCLUDES := -Iinclude/Scanner -Iinclude/Parser
 
