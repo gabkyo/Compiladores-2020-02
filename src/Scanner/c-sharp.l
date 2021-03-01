@@ -2,7 +2,7 @@
 
 %{
 
-#include <stdlib.h>
+#include "pch.h"
 
 #define SBYTE_MAX_VALUE   127
 #define BYTE_MAX_VALUE  256
@@ -46,128 +46,128 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 "//".* { /* singleline comments are ignored*/ }
 "/*""*"*(^"/"^"*")*"*"*"*/" { /* multiline comments are ignored */ }
 
-{identifier_with_at} { return IDENTIFIER; }
+{identifier_with_at} { printf("IDENTIFIER\n");return IDENTIFIER; }
 
-"(" { return START_PAR; }
-")" { return END_PAR; }
-"{" { return START_CURLY; }
-"}" { return END_CURLY; }
-"[" { return START_BRCKT; }
-"]" { return END_BRCKT; }
-"+" { return ADD; }
-"-" { return SUB; }
-"/" { return DIV; }
-"*" { return MUL; }
-"%" { return MOD; }
-"!" { return NOT; }
-"?" { return QMARK; }
-"^" { return CIRCUMFLEX; }
-":" { return COLON; }
-";" { return SEMI; }
-"," { return COMMA; }
-"." { return DOT; }
-"=" { return ASSIGN; }
-"<" { return LESS_THEN; }
-">" { return GREATER_THEN; }
-"&" { return BIT_AND; }
-"|" { return BIT_OR; }
-"~" { return BIT_NOT; }
-"==" { return EQ; }
-">=" { return GEQ; }
-"<=" { return LEQ; }
-"!=" { return NOT_EQ; }
-"+=" { return ADD_ASSIGN; }
-"-=" { return SUB_ASSIGN; }
-"*=" { return MUL_ASSIGN; }
-"/=" { return DIV_ASSIGN; }
-"%=" { return MOD_ASSIGN; }
-"&=" { return BIT_AND_ASSIGN; }
-"|=" { return BIT_OR_ASSIGN; }
-"^=" { return CIRCUMFLEX_ASSIGN; }
-"<<" { return LEFT_SHIFT; }
-">>" { return RIGHT_SHIFT; }
-"&&" { return AND; }
-"||" { return OR; }
-"??" { return DOUBLE_QMARK; }
-"++" { return INCREMENT; }
-"--" { return DECREMENT; }
-"=>" { return LAMBDA; }
-"<<=" { return LEFT_SHIFT_ASSIGN; }
-">>=" { return RIGHT_SHIFT_ASSIGN; }
-"abstract" { return ABSTRACT; }
-"as" { return AS; }
-"base" { return BASE; }
-"bool" { return BOOL_TYPE; }
-"break" { return BREAK; }
-"byte" { return BYTE_TYPE; }
-"case" { return CASE; }
-"char" { return CHAR_TYPE; }
-"checked" { return CHECKED; }
-"class" { return CLASS; }
-"const" { return CONST; }
-"continue" { return CONTINUE; }
-"decimal" { return DECIMAL_TYPE; }
-"default" { return DEFAULT; }
-"delegate" { return DELEGATE; }
-"do" { return DO; }
-"double" { return DOUBLE_TYPE; }
-"else" { return ELSE; }
-"enum" { return ENUM; }
-"event" { return EVENT; }
-"explicit" { return EXPLICIT; }
-"extern" { return EXTERN; }
-"false" { return FALSE_VAL; }
-"fixed" { return FIXED; }
-"float" { return FLOAT_TYPE; }
-"for" { return FOR; }
-"foreach" { return FOREACH; }
-"goto" { return GOTO; }
-"if" { return IF; }
-"implicit" { return IMPLICIT; }
-"in" { return IN; }
-"int" { return INT_TYPE; }
-"interface" { return INTERFACE; }
-"internal" { return INTERNAL; }
-"is" { return IS; }
-"lock" { return LOCK; }
-"long" { return LONG_TYPE; }
-"new" { return NEW; }
-"null" { return NULL_VALUE; }
-"object" { return OBJECT; }
-"operator" { return OPERATOR; }
-"out" { return OUT; }
-"override" { return OVERRIDE; }
-"params" { return PARAMS; }
-"private" { return PRIVATE; }
-"protected" { return PROTECTED; }
-"public" { return PUBLIC; }
-"readonly" { return READONLY; }
-"ref" { return REF; }
-"return" { return RETURN; }
-"sbyte" { return SBYTE_TYPE; }
-"sealed" { return SEALED; }
-"short" { return SHORT_TYPE; }
-"sizeof" { return SIZEOF; }
-"stackalloc" { return STACKALLOC; }
-"static" { return STATIC; }
-"string" { return STRING_TYPE; }
-"struct" { return STRUCT; }
-"switch" { return SWITCH; }
-"this" { return THIS; }
-"throw" { return THROW; }
-"true" { return TRUE_VAL; }
-"typeof" { return TYPEOF; }
-"uint" { return UINT_TYPE; }
-"ulong" { return ULONG_TYPE; }
-"unchecked" { return UNCHECKED; }
-"unsafe" { return UNSAFE; }
-"ushort" { return USHORT_TYPE; }
-"virtual" { return VIRTUAL; }
-"void" { return VOID; }
-"volatile" { return VOLATILE; }
-"while" { return WHILE; }
+"(" { printf("START_PAR\n");return START_PAR; }
+")" { printf("END_PAR\n");return END_PAR; }
+"{" { printf("START_CURLY\n");return START_CURLY; }
+"}" { printf("END_CURLY\n");return END_CURLY; }
+"[" { printf("START_BRCKT\n");return START_BRCKT; }
+"]" { printf("END_BRCKT\n");return END_BRCKT; }
+"+" { printf("ADD\n");return ADD; }
+"-" { printf("SUB\n");return SUB; }
+"/" { printf("DIV\n");return DIV; }
+"*" { printf("MUL\n");return MUL; }
+"%" { printf("MOD\n");return MOD; }
+"!" { printf("NOT\n");return NOT; }
+"?" { printf("QMARK\n");return QMARK; }
+"^" { printf("CIRCUMFLEX\n");return CIRCUMFLEX; }
+":" { printf("COLON\n");return COLON; }
+";" { printf("SEMI\n");return SEMI; }
+"," { printf("COMMA\n");return COMMA; }
+"." { printf("DOT\n");return DOT; }
+"=" { printf("ASSIGN\n");return ASSIGN; }
+"<" { printf("LESS_THEN\n");return LESS_THEN; }
+">" { printf("GREATER_THEN\n");return GREATER_THEN; }
+"&" { printf("BIT_AND\n");return BIT_AND; }
+"|" { printf("BIT_OR\n");return BIT_OR; }
+"~" { printf("BIT_NOT\n");return BIT_NOT; }
+"==" { printf("EQ\n");return EQ; }
+">=" { printf("GEQ\n");return GEQ; }
+"<=" { printf("LEQ\n");return LEQ; }
+"!=" { printf("NOT_EQ\n");return NOT_EQ; }
+"+=" { printf("ADD_ASSIGN\n");return ADD_ASSIGN; }
+"-=" { printf("SUB_ASSIGN\n");return SUB_ASSIGN; }
+"*=" { printf("MUL_ASSIGN\n");return MUL_ASSIGN; }
+"/=" { printf("DIV_ASSIGN\n");return DIV_ASSIGN; }
+"%=" { printf("MOD_ASSIGN\n");return MOD_ASSIGN; }
+"&=" { printf("BIT_AND_ASSIGN\n");return BIT_AND_ASSIGN; }
+"|=" { printf("BIT_OR_ASSIGN\n");return BIT_OR_ASSIGN; }
+"^=" { printf("CIRCUMFLEX_ASSIGN\n");return CIRCUMFLEX_ASSIGN; }
+"<<" { printf("LEFT_SHIFT\n");return LEFT_SHIFT; }
+">>" { printf("RIGHT_SHIFT\n");return RIGHT_SHIFT; }
+"&&" { printf("AND\n");return AND; }
+"||" { printf("OR\n");return OR; }
+"??" { printf("DOUBLE_QMARK\n");return DOUBLE_QMARK; }
+"++" { printf("INCREMENT\n");return INCREMENT; }
+"--" { printf("DECREMENT\n");return DECREMENT; }
+"=>" { printf("LAMBDA\n");return LAMBDA; }
+"<<=" { printf("LEFT_SHIFT_ASSIGN\n");return LEFT_SHIFT_ASSIGN; }
+">>=" { printf("RIGHT_SHIFT_ASSIGN\n");return RIGHT_SHIFT_ASSIGN; }
+"abstract" { printf("ABSTRACT\n");return ABSTRACT; }
+"as" { printf("AS\n");return AS; }
+"base" { printf("BASE\n");return BASE; }
+"bool" { printf("BOOL_TYPE\n");return BOOL_TYPE; }
+"break" { printf("BREAK\n");return BREAK; }
+"byte" { printf("BYTE_TYPE\n");return BYTE_TYPE; }
+"case" { printf("CASE\n");return CASE; }
+"char" { printf("CHAR_TYPE\n");return CHAR_TYPE; }
+"checked" { printf("CHECKED\n");return CHECKED; }
+"class" { printf("CLASS\n");return CLASS; }
+"const" { printf("CONST\n");return CONST; }
+"continue" { printf("CONTINUE\n");return CONTINUE; }
+"decimal" { printf("DECIMAL_TYPE\n");return DECIMAL_TYPE; }
+"default" { printf("DEFAULT\n");return DEFAULT; }
+"delegate" { printf("DELEGATE\n");return DELEGATE; }
+"do" { printf("DO\n");return DO; }
+"double" { printf("DOUBLE_TYPE\n");return DOUBLE_TYPE; }
+"else" { printf("ELSE\n");return ELSE; }
+"enum" { printf("ENUM\n");return ENUM; }
+"event" { printf("EVENT\n");return EVENT; }
+"explicit" { printf("EXPLICIT\n");return EXPLICIT; }
+"extern" { printf("EXTERN\n");return EXTERN; }
+"false" { printf("FALSE_VAL\n");return FALSE_VAL; }
+"fixed" { printf("FIXED\n");return FIXED; }
+"float" { printf("FLOAT_TYPE\n");return FLOAT_TYPE; }
+"for" { printf("FOR\n");return FOR; }
+"foreach" { printf("FOREACH\n");return FOREACH; }
+"goto" { printf("GOTO\n");return GOTO; }
+"if" { printf("IF\n");return IF; }
+"implicit" { printf("IMPLICIT\n");return IMPLICIT; }
+"in" { printf("IN\n");return IN; }
+"int" { printf("INT_TYPE\n");return INT_TYPE; }
+"interface" { printf("INTERFACE\n");return INTERFACE; }
+"internal" { printf("INTERNAL\n");return INTERNAL; }
+"is" { printf("IS\n");return IS; }
+"lock" { printf("LOCK\n");return LOCK; }
+"long" { printf("LONG_TYPE\n");return LONG_TYPE; }
+"new" { printf("NEW\n");return NEW; }
+"null" { printf("NULL_VALUE\n");return NULL_VALUE; }
+"object" { printf("OBJECT\n");return OBJECT; }
+"operator" { printf("OPERATOR\n");return OPERATOR; }
+"out" { printf("OUT\n");return OUT; }
+"override" { printf("OVERRIDE\n");return OVERRIDE; }
+"params" { printf("PARAMS\n");return PARAMS; }
+"private" { printf("PRIVATE\n");return PRIVATE; }
+"protected" { printf("PROTECTED\n");return PROTECTED; }
+"public" { printf("PUBLIC\n");return PUBLIC; }
+"readonly" { printf("READONLY\n");return READONLY; }
+"ref" { printf("REF\n");return REF; }
+"return" { printf("RETURN\n");return RETURN; }
+"sbyte" { printf("SBYTE_TYPE\n");return SBYTE_TYPE; }
+"sealed" { printf("SEALED\n");return SEALED; }
+"short" { printf("SHORT_TYPE\n");return SHORT_TYPE; }
+"sizeof" { printf("SIZEOF\n");return SIZEOF; }
+"stackalloc" { printf("STACKALLOC\n");return STACKALLOC; }
+"static" { printf("STATIC\n");return STATIC; }
+"string" { printf("STRING_TYPE\n");return STRING_TYPE; }
+"struct" { printf("STRUCT\n");return STRUCT; }
+"switch" { printf("SWITCH\n");return SWITCH; }
+"this" { printf("THIS\n");return THIS; }
+"throw" { printf("THROW\n");return THROW; }
+"true" { printf("TRUE_VAL\n");return TRUE_VAL; }
+"typeof" { printf("TYPEOF\n");return TYPEOF; }
+"uint" { printf("UINT_TYPE\n");return UINT_TYPE; }
+"ulong" { printf("ULONG_TYPE\n");return ULONG_TYPE; }
+"unchecked" { printf("UNCHECKED\n");return UNCHECKED; }
+"unsafe" { printf("UNSAFE\n");return UNSAFE; }
+"ushort" { printf("USHORT_TYPE\n");return USHORT_TYPE; }
+"virtual" { printf("VIRTUAL\n");return VIRTUAL; }
+"void" { printf("VOID\n");return VOID; }
+"volatile" { printf("VOLATILE\n");return VOLATILE; }
+"while" { printf("WHILE\n");return WHILE; }
 
-{identifier} { return IDENTIFIER; }
+{identifier} { printf("IDENTIFIER\n");return IDENTIFIER; }
 
 {sign}?[0-9]+ { long long value = atoll(yytext); return CheckIntType(value, NULL); }
 {sign}?([0-9]+"U"|[0-9]+"u") { long long value = atoll(TreatIntString(yytext)); return CheckIntType(value, "U"); }
@@ -192,6 +192,16 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 
 %{
 
+#ifdef DEBUG_SCANNER
+
+int main(int argc, char *argv[])
+{
+    yylex();
+    return EXIT_SUCCESS;
+}
+
+#endif
+
 int CheckIntType(long long value, char *suffix)
 {
     value = llabs(value);
@@ -200,14 +210,46 @@ int CheckIntType(long long value, char *suffix)
     if (suffix == NULL)
     {
         // Comparing the value with the maximum size of each type to define the type that must be returned:
-        if (value <= SBYTE_MAX_VALUE) return SBYTE_VAL;
-        else if (value <= BYTE_MAX_VALUE) return BYTE_VAL;
-        else if (value <= SHORT_MAX_VALUE) return SHORT_VAL;
-        else if (value <= USHORT_MAX_VALUE) return USHORT_VAL;
-        else if (value <= INT_MAX_VALUE) return INT_VAL;
-        else if (value <= UINT_MAX_VALUE) return UINT_VAL;
-        else if (value <= LONG_MAX_VALUE) return LONG_VAL;
-        else if (value <= ULONG_MAX_VALUE) return ULONG_VALUE;
+        if (value <= SBYTE_MAX_VALUE)
+        {
+            printf("SBYTE_VAL\n");
+            return SBYTE_VAL;
+        }
+        else if (value <= BYTE_MAX_VALUE)
+        {
+            printf("BYTE_VAL\n");
+            return BYTE_VAL;
+        }
+        else if (value <= SHORT_MAX_VALUE)
+        {
+            printf("SHORT_VAL\n");
+            return SHORT_VAL;
+        }
+        else if (value <= USHORT_MAX_VALUE)
+        {
+            printf("USHORT_VAL\n");
+            return USHORT_VAL;
+        }
+        else if (value <= INT_MAX_VALUE)
+        {
+            printf("INT_VAL\n");
+            return INT_VAL;
+        }
+        else if (value <= UINT_MAX_VALUE)
+        {
+            printf("UINT_VAL\n");
+            return UINT_VAL;
+        }
+        else if (value <= LONG_MAX_VALUE)
+        {
+            printf("LONG_VAL\n");
+            return LONG_VAL;
+        }
+        else if (value <= ULONG_MAX_VALUE)
+        {
+            printf("ULONG_VALUE\n");
+            return ULONG_VALUE;
+        }
     }
     else if (strcmp(suffix, "U") == 0)
         goto start_from_unsigned;
@@ -217,13 +259,25 @@ int CheckIntType(long long value, char *suffix)
         goto start_from_unsigned;
 
     start_from_unsigned:
-    if (value <= UINT_MAX_VALUE) return UINT_VAL;
+    if (value <= UINT_MAX_VALUE)
+    {
+        printf("UINT_VAL\n");
+        return UINT_VAL;
+    }
     
     start_from_long:
-    if (value > UINT_MAX_VALUE) return LONG_VAL;
+    if (value > UINT_MAX_VALUE)
+    {
+        printf("LONG_VAL\n");
+        return LONG_VAL;
+    }
     
     start_from_ulong:
-    if (value > LONG_MAX_VALUE) return ULONG_VALUE;
+    if (value > LONG_MAX_VALUE)
+    {
+        printf("ULONG_VALUE\n");
+        return ULONG_VALUE;
+    }
 
     return -1;
 }
@@ -308,9 +362,21 @@ int CheckRealType(char *text)
     char *number = malloc(chars * sizeof(char));
     number = strcpy(number, text + offset, chars * sizeof(char));
     value = strtold(number);
-    if (value <= FLT_MAX) return FLOAT_VAL;
-    else if (value > FLT_MAX && value <= DBL_VAL) return DOUBLE_VAL;
-    else return DECIMAL_VAL;
+    if (value <= FLT_MAX)
+    {
+        printf("FLOAT_VAL\n");
+        return FLOAT_VAL;
+    }
+    else if (value > FLT_MAX && value <= DBL_VAL)
+    {
+        printf("DOUBLE_VAL\n");
+        return DOUBLE_VAL;
+    }
+    else
+    {
+        printf("DECIMAL_VAL\n");
+        return DECIMAL_VAL;
+    }
 }
 
 %}

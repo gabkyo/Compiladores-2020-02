@@ -1,10 +1,20 @@
+DEBUG_FLAGS :=
 
-SRC_FILES := $(wildcard src/*.c) $(wildcard src/Scanner/*.c) $(wildcard src/Parser/*.c)
+ifeq ($(debug_scanner),ok)
+	DEBUG_FLAGS += -DDEBUG_SCANNER
+endif
+
+SCANNER_SRC := $(wildcard src/Scanner/*.c)
+PARSER_SRC := $(wildcard src/Parser/*.c)
+SRC_FILES := $(wildcard src/*.c) $(SCANNER_SRC) $(PARSER_SRC)
 
 INCLUDES := -Iinclude/ -Iinclude/Scanner/ -Iinclude/Parser/
 
 main: parser scanner
-	gcc $(INCLUDES) -o bin/csharp 
+	gcc $(INCLUDES) $(SRC_FILES) -o bin/csharp 
+
+scanner_test: scanner
+	gcc $(INCLUDES) $(SCANNER_SRC) -o bin/cs_scanner_test
 
 scanner:
 	flex -o src/Scanner/scanner.c src/Scanner/c-sharp.l
