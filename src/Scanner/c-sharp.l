@@ -1,11 +1,16 @@
 /* Scanner for a C# 6.0 compiler generated with Flex */
 
+%option noyywrap
+%option nounput
+%option noinput
+
 %{
 
 #include "pch.h"
+#include "parser.h"
 
-#define SBYTE_MAX_VALUE   127
-#define BYTE_MAX_VALUE  256
+#define SBYTE_MAX_VALUE  127
+#define BYTE_MAX_VALUE   256
 #define SHORT_MAX_VALUE  32767
 #define USHORT_MAX_VALUE 65535
 #define INT_MAX_VALUE    2147483647
@@ -190,18 +195,6 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 
 %%
 
-%{
-
-#ifdef DEBUG_SCANNER
-
-int main(int argc, char *argv[])
-{
-    yylex();
-    return EXIT_SUCCESS;
-}
-
-#endif
-
 int CheckIntType(long long value, char *suffix)
 {
     value = llabs(value);
@@ -245,10 +238,10 @@ int CheckIntType(long long value, char *suffix)
             printf("LONG_VAL\n");
             return LONG_VAL;
         }
-        else if (value <= ULONG_MAX_VALUE)
+        else
         {
             printf("ULONG_VALUE\n");
-            return ULONG_VALUE;
+            return ULONG_VAL;
         }
     }
     else if (strcmp(suffix, "U") == 0)
@@ -276,7 +269,7 @@ int CheckIntType(long long value, char *suffix)
     if (value > LONG_MAX_VALUE)
     {
         printf("ULONG_VALUE\n");
-        return ULONG_VALUE;
+        return ULONG_VAL;
     }
 
     return -1;
@@ -299,7 +292,7 @@ long long TreatIntString(char *text)
         ++letterPtr;
     }
     char *number = malloc(digits * sizeof(char));
-    number = strcpy(number, text, digits * sizeof(char));
+    number = strncpy(number, text, digits * sizeof(char));
     long long result = atoll(number);
     free(number);
     return result;
@@ -316,8 +309,8 @@ long long TreatHexString(char *text)
         ++letter;
     }
     char *number = malloc(digits * sizeof(char));
-    number = strcpy(number, text, digits * sizeof(char));
-    result = (long long)strtol(number, 0);
+    number = strncpy(number, text, digits * sizeof(char));
+    result = (long long)strtol(number, NULL, 0);
     return result;
 }
 
@@ -360,14 +353,14 @@ int CheckRealType(char *text)
         else if (IS_FLOAT_SUFFIX(*letter) || IS_DOUBLE_SUFFIX(*letter) || IS_DECIMAL_SUFFIX(*letter)) break;
     }
     char *number = malloc(chars * sizeof(char));
-    number = strcpy(number, text + offset, chars * sizeof(char));
-    value = strtold(number);
+    number = strncpy(number, text + offset, chars * sizeof(char));
+    value = strtold(number, NULL);
     if (value <= FLT_MAX)
     {
         printf("FLOAT_VAL\n");
         return FLOAT_VAL;
     }
-    else if (value > FLT_MAX && value <= DBL_VAL)
+    else if (value > FLT_MAX && value <= DBL_MAX)
     {
         printf("DOUBLE_VAL\n");
         return DOUBLE_VAL;
@@ -378,5 +371,3 @@ int CheckRealType(char *text)
         return DECIMAL_VAL;
     }
 }
-
-%}

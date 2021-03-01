@@ -11,10 +11,7 @@ SRC_FILES := $(wildcard src/*.c) $(SCANNER_SRC) $(PARSER_SRC)
 INCLUDES := -Iinclude/ -Iinclude/Scanner/ -Iinclude/Parser/
 
 main: parser scanner
-	gcc $(INCLUDES) $(SRC_FILES) -o bin/csharp 
-
-scanner_test: scanner
-	gcc $(INCLUDES) $(SCANNER_SRC) -o bin/cs_scanner_test
+	gcc $(INCLUDES) $(SRC_FILES) -o bin/csharp -lfl -ly
 
 scanner:
 	flex -o src/Scanner/scanner.c src/Scanner/c-sharp.l

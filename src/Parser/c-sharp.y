@@ -171,5 +171,7 @@ ternary_operations:
 
 int main(int argc, char *argv[])
 {
+    if (yyparse() == 0) printf("PARSE SUCCESSFUL\n");
+    else printf("PARSE FAILED\n");
     return EXIT_SUCCESS;
 }
