@@ -107,7 +107,65 @@ for_statement: FOR START_PAR expression SEMI expression SEMI expression END_PAR 
 foreach_statement: FOREACH START_PAR expression END_PAR loop_body;
 
 /* Expression rules: */
-expression: 
+expression: value | IDENTIFIER | START_PAR expression END_PAR | assignment_expressions | unary_operations | binary_operations | ternary_operations;
+
+/* Assignment expression rules: */
+assignment_expressions:
+    IDENTIFIER ASSIGN expression |
+    IDENTIFIER ADD_ASSIGN expression |
+    IDENTIFIER SUB_ASSIGN expression |
+    IDENTIFIER MUL_ASSIGN expression |
+    IDENTIFIER DIV_ASSIGN expression |
+    IDENTIFIER MOD_ASSIGN expression |
+    IDENTIFIER BIT_AND_ASSIGN expression |
+    IDENTIFIER BIT_OR_ASSIGN expression |
+    IDENTIFIER CIRCUMFLEX_ASSIGN expression |
+    IDENTIFIER RIGHT_SHIFT_ASSIGN expression |
+    IDENTIFIER LEFT_SHIFT_ASSIGN expression;
+
+/* Unary operations expression rules: */
+unary_operations:
+    expression INCREMENT |
+    expression DECREMENT |
+    INCREMENT expression |
+    DECREMENT expression |
+    ADD expression |
+    SUB expression |
+    BIT_NOT expression |
+    NOT expression;
+
+/* Binary operations expression rules: */
+binary_operations:
+    expression ADD expression |
+    expression SUB expression |
+    expression MUL expression |
+    expression DIV expression |
+    expression MOD expression |
+    expression RIGHT_SHIFT expression |
+    expression LEFT_SHIFT expression |
+    expression AND expression |
+    expression OR expression |
+    expression LESS_THEN expression |
+    expression GREATER_THEN expression |
+    expression LEQ expression |
+    expression GEQ expression |
+    expression EQ expression |
+    expression NOT_EQ expression |
+    expression BIT_AND expression |
+    expression BIT_OR expression |
+    expression RIGHT_SHIFT expression |
+    expression LEFT_SHIFT expression |
+    expression DOUBLE_QMARK expression |
+    expression CIRCUMFLEX expression;
+
+/* Ternary operations expression rules: */
+ternary_operations:
+    expression QMARK expression COLON expression;
+
+/* variable and data accessing expression rules: */
+
+/* Method invoking operations expression rules: */
+
 
 %%
 
