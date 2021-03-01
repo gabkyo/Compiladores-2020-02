@@ -15,6 +15,8 @@ extern int yylineno;
 
 %token IDENTIFIER START_PAR END_PAR START_CURLY END_CURLY START_BRCKT END_BRCKT ADD SUB DIV MUL MOD NOT QMARK CIRCUMFLEX COLON SEMI COMMA DOT ASSIGN LESS_THEN GREATER_THEN BIT_AND BIT_OR BIT_NOT EQ GEQ LEQ NOT_EQ ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN BIT_AND_ASSIGN BIT_OR_ASSIGN CIRCUMFLEX_ASSIGN LEFT_SHIFT RIGHT_SHIFT AND OR DOUBLE_QMARK INCREMENT DECREMENT LAMBDA LEFT_SHIFT_ASSIGN RIGHT_SHIFT_ASSIGN ABSTRACT AS BASE BOOL_TYPE BREAK BYTE_TYPE CASE CHAR_TYPE CHECKED CLASS CONST CONTINUE DECIMAL_TYPE DEFAULT DELEGATE DO DOUBLE_TYPE ELSE ENUM EVENT EXPLICIT EXTERN FALSE_VAL FIXED FLOAT_TYPE FOR FOREACH GOTO IF IMPLICIT IN INT_TYPE INTERFACE INTERNAL IS LOCK LONG_TYPE NEW NULL_VALUE OBJECT OPERATOR OUT OVERRIDE PARAMS PRIVATE PROTECTED PUBLIC READONLY REF RETURN SBYTE_TYPE SEALED SHORT_TYPE SIZEOF STACKALLOC STATIC STRING_TYPE STRUCT SWITCH THIS THROW TRUE_VAL TYPEOF UINT_TYPE ULONG_TYPE UNCHECKED UNSAFE USHORT_TYPE VIRTUAL VOID VOLATILE WHILE INT_VAL UINT_VAL LONG_VAL ULONG_VAL FLOAT_VAL DOUBLE_VAL DECIMAL_VAL CHAR_VAL ENTER END_OF_FILE BYTE_VAL SBYTE_VAL SHORT_VAL USHORT_VAL STRING_VAL
 
+%start program
+
 %%
 
 /* Useful rules: */
@@ -23,13 +25,14 @@ modifier_list: modifier_list modifier | modifier;
 modifier: STATIC | CONST | OVERRIDE | VIRTUAL | READONLY | REF | OUT;
 
 /* Type definition rules: */
-type: simple_type | nullable_type | IDENTIFIER;
+type: simple_type | nullable_type | vector_type | IDENTIFIER;
 nullable_type: simple_type QMARK | IDENTIFIER QMARK;
-simple_type: BOOL_TYPE | numeric_type;
+simple_type: BOOL_TYPE | numeric_type | STRING_TYPE;
 numeric_type: integer_type | floating_type | DECIMAL_TYPE;
 integer_type: SBYTE_TYPE | BYTE_TYPE | SHORT_TYPE | USHORT_TYPE | INT_TYPE | UINT_TYPE | LONG_TYPE | ULONG_TYPE | CHAR_TYPE;
 floating_type: FLOAT_TYPE | DOUBLE_TYPE;
 value: INT_VAL | TRUE_VAL | FALSE_VAL | BYTE_VAL | CHAR_VAL | LONG_VAL | UINT_VAL | FLOAT_VAL | SBYTE_VAL | SHORT_VAL | ULONG_VAL | STRING_VAL | USHORT_VAL | DECIMAL_VAL;
+vector_type: type START_BRCKT END_BRCKT | type START_BRCKT numeric_val END_BRCKT
 numeric_val: BYTE_VAL | CHAR_VAL | LONG_VAL | UINT_VAL | FLOAT_VAL | SBYTE_VAL | SHORT_VAL | ULONG_VAL | USHORT_VAL | DECIMAL_VAL;
 
 /* Program rule: */
@@ -51,7 +54,7 @@ struct_decl:
 
 /* Statement rules: */
 statement_list: statement_list statement | statement;
-statement: obj_decl | method_decl_statement | attr_decl_statement | var_decl_statement | if_else_statement | switch_statement | while_statement | do_while_statement | for_statement | foreach_statement | return_statement | expression SEMI | SEMI;
+statement: obj_decl | method_decl_statement | attr_decl_statement | var_decl_statement | if_else_statement | switch_statement | while_statement | do_while_statement | for_statement | foreach_statement | return_statement | expression SEMI | SEMI | method_invoking | var_accessing;
 
 /* Method declaration statement rules: */
 method_decl_statement:
@@ -174,9 +177,22 @@ ternary_operations:
     expression QMARK expression COLON expression;
 
 /* variable and data accessing expression rules: */
+var_accessing:
+    IDENTIFIER DOT var_accessing |
+    IDENTIFIER DOT method_invoking |
+    IDENTIFIER;
 
 /* Method invoking operations expression rules: */
+method_invoking:
+    IDENTIFIER START_PAR argument_list END_PAR;
 
+argument_list:
+    argument_list argument |
+    argument |
+    %empty;
+
+argument:
+    value
 
 %%
 

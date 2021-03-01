@@ -24,15 +24,15 @@ int CheckRealType(char *text);
 
 %}
 
-identifier ([a..z]|[A..Z]|'_')([a..z]|[A..Z]|[0..9]|'_')*
+identifier ([a-z]|[A-Z]|'_')([a-z]|[A-Z]|[0-9]|'_')*
 
 identifier_with_at "@"{identifier}
 
-hex_integer (0x|0X)([0..9]|[a..f]|[A..F])
+hex_integer (0x|0X)([0-9]|[a-f]|[A-F])
 
-real_literal ([0..9]+'.'[0..9]+{exponent_part}?{real_type_suffix}?)|('.'[0..9]+{exponent_part}?{real_type_suffix}?)|([0..9]+{exponent_part}{real_type_suffix}?)|([0..9]+{real_type_suffix})
+real_literal ([0-9]+'.'[0-9]+{exponent_part}?{real_type_suffix}?)|('.'[0-9]+{exponent_part}?{real_type_suffix}?)|([0-9]+{exponent_part}{real_type_suffix}?)|([0-9]+{real_type_suffix})
 
-exponent_part ('e'|'E'){sign}?[0..9]+
+exponent_part ('e'|'E'){sign}?[0-9]+
 
 sign ('+'|'-')
 
@@ -44,7 +44,7 @@ character .|{simple_escape_sequence}|{hexadecimal_escape_sequence}
 
 simple_escape_sequence '\\\''|'\\"'|'\\\\'|'\\0'|'\\a'|'\\b'|'\\f'|'\\n'|'\\r'|'\\t'|'\\v'
 
-hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([0..9]|[a..f]|[A..F])?([0..9]|[a..f]|[A..F])? */
+hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[a-f]|[A-F])?([0-9]|[a-f]|[A-F])? */
 
 %%
 
@@ -190,7 +190,7 @@ hexadecimal_escape_sequence "\\x"([0..9]|[a..f]|[A..F])([0..9]|[a..f]|[A..F])?([
 
 (\".\"|\"(^\n)\") { return STRING_VAL; }
 
-"\n" { return ENTER; }
+"\\n" { return ENTER; }
 "\0" { return END_OF_FILE; }
 
 %%
