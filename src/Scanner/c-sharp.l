@@ -48,6 +48,7 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 
 %%
 
+(" "|\t|\n) { /* ignoring white spaces */ }
 "//".* { /* singleline comments are ignored*/ }
 "/*""*"*(^"/"^"*")*"*"*"*/" { /* multiline comments are ignored */ }
 
@@ -191,7 +192,7 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 (\".\"|\"(^\n)\") { return STRING_VAL; }
 
 "\\n" { return ENTER; }
-"\0" { return END_OF_FILE; }
+<<EOF>> { return END_OF_FILE; }
 
 %%
 
