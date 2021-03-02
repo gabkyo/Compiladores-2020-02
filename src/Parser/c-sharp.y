@@ -167,8 +167,6 @@ binary_operations:
     expression NOT_EQ expression |
     expression BIT_AND expression |
     expression BIT_OR expression |
-    expression RIGHT_SHIFT expression |
-    expression LEFT_SHIFT expression |
     expression DOUBLE_QMARK expression |
     expression CIRCUMFLEX expression;
 
