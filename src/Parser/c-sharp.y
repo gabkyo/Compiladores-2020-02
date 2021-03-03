@@ -43,11 +43,13 @@ obj_decl_list: obj_decl_list obj_decl | obj_decl | %empty;
 obj_decl: class_decl | struct_decl;
 class_decl:
     scope CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
+    modifier CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
     scope modifier CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
     modifier scope CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
     CLASS IDENTIFIER START_CURLY statement_list END_CURLY;
 struct_decl:
     scope STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
+    modifier STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
     scope modifier STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
     modifier scope STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
     STRUCT IDENTIFIER START_CURLY statement_list END_CURLY;
