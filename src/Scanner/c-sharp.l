@@ -135,7 +135,6 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 "interface" { printf("INTERFACE\n");return INTERFACE; }
 "internal" { printf("INTERNAL\n");return INTERNAL; }
 "is" { printf("IS\n");return IS; }
-"lock" { printf("LOCK\n");return LOCK; }
 "long" { printf("LONG_TYPE\n");return LONG_TYPE; }
 "new" { printf("NEW\n");return NEW; }
 "null" { printf("NULL_VALUE\n");return NULL_VALUE; }
@@ -160,7 +159,6 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 "struct" { printf("STRUCT\n");return STRUCT; }
 "switch" { printf("SWITCH\n");return SWITCH; }
 "this" { printf("THIS\n");return THIS; }
-"throw" { printf("THROW\n");return THROW; }
 "true" { printf("TRUE_VAL\n");return TRUE_VAL; }
 "typeof" { printf("TYPEOF\n");return TYPEOF; }
 "uint" { printf("UINT_TYPE\n");return UINT_TYPE; }
@@ -170,7 +168,6 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 "ushort" { printf("USHORT_TYPE\n");return USHORT_TYPE; }
 "virtual" { printf("VIRTUAL\n");return VIRTUAL; }
 "void" { printf("VOID\n");return VOID; }
-"volatile" { printf("VOLATILE\n");return VOLATILE; }
 "while" { printf("WHILE\n");return WHILE; }
 
 {identifier} { printf("IDENTIFIER\n");return IDENTIFIER; }
