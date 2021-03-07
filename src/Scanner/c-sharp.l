@@ -186,10 +186,9 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 
 ("'"."'"|"'\\n'"|"'\\t'"|"'\\a'"|"'\\0'"|"'\\r'"|"'\\b'"|"'\\v'") { return CHAR_VAL; }
 
-(\".\"|\"(^\n)\") { return STRING_VAL; }
-
 "\\n" { return ENTER; }
-<<EOF>> { return END_OF_FILE; }
+
+(\".*?\") { return STRING_VAL; }
 
 %%
 

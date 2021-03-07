@@ -42,7 +42,7 @@ value: INT_VAL | TRUE_VAL | FALSE_VAL | BYTE_VAL | CHAR_VAL | LONG_VAL | UINT_VA
 numeric_val: BYTE_VAL | CHAR_VAL | LONG_VAL | UINT_VAL | FLOAT_VAL | SBYTE_VAL | SHORT_VAL | ULONG_VAL | USHORT_VAL | DECIMAL_VAL;
 
 /* Program rule: */
-program: obj_decl_list END_OF_FILE;
+program: obj_decl_list;
 
 /* Object declaration rules: */
 obj_decl_list: obj_decl_list obj_decl | obj_decl | %empty;
@@ -91,6 +91,8 @@ method_decl_statement:
     scope VOID IDENTIFIER START_PAR parameter_list END_PAR method_body |
     scope type IDENTIFIER START_PAR END_PAR method_body |
     scope type IDENTIFIER START_PAR parameter_list END_PAR method_body |
+    modifier_list VOID IDENTIFIER START_PAR END_PAR method_body |
+    modifier_list VOID IDENTIFIER START_PAR parameter_list END_PAR method_body |
     scope modifier_list VOID IDENTIFIER START_PAR END_PAR method_body |
     scope modifier_list VOID IDENTIFIER START_PAR parameter_list END_PAR method_body |
     scope modifier_list type IDENTIFIER START_PAR END_PAR method_body |
@@ -266,12 +268,8 @@ attr_access:
 
 /* Method invoking operations expression rules: */
 method_invoking:
-    IDENTIFIER DOT IDENTIFIER START_PAR argument_list END_PAR |
-    IDENTIFIER DOT IDENTIFIER START_PAR END_PAR |
-    THIS DOT IDENTIFIER START_PAR argument_list END_PAR |
-    THIS DOT IDENTIFIER START_PAR END_PAR |
-    BASE DOT IDENTIFIER START_PAR argument_list END_PAR |
-    BASE DOT IDENTIFIER START_PAR END_PAR;
+    attr_access START_PAR argument_list END_PAR |
+    attr_access START_PAR END_PAR |
 
 argument_list:
     argument_list argument |

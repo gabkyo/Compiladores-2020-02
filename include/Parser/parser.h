@@ -1,8 +1,9 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.5.1.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
+   Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -29,6 +30,9 @@
 
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
+
+/* Undocumented macros, especially those whose name start with YY_,
+   are private implementation details.  Do not rely on them.  */
 
 #ifndef YY_YY_INCLUDE_PARSER_PARSER_H_INCLUDED
 # define YY_YY_INCLUDE_PARSER_PARSER_H_INCLUDED
@@ -127,58 +131,55 @@ extern int yydebug;
     INTERFACE = 337,
     INTERNAL = 338,
     IS = 339,
-    LOCK = 340,
-    LONG_TYPE = 341,
-    NEW = 342,
-    NULL_VALUE = 343,
-    OBJECT = 344,
-    OPERATOR = 345,
-    OUT = 346,
-    OVERRIDE = 347,
-    PARAMS = 348,
-    PRIVATE = 349,
-    PROTECTED = 350,
-    PUBLIC = 351,
-    READONLY = 352,
-    REF = 353,
-    RETURN = 354,
-    SBYTE_TYPE = 355,
-    SEALED = 356,
-    SHORT_TYPE = 357,
-    SIZEOF = 358,
-    STACKALLOC = 359,
-    STATIC = 360,
-    STRING_TYPE = 361,
-    STRUCT = 362,
-    SWITCH = 363,
-    THIS = 364,
-    THROW = 365,
-    TRUE_VAL = 366,
-    TYPEOF = 367,
-    UINT_TYPE = 368,
-    ULONG_TYPE = 369,
-    UNCHECKED = 370,
-    UNSAFE = 371,
-    USHORT_TYPE = 372,
-    VIRTUAL = 373,
-    VOID = 374,
-    VOLATILE = 375,
-    WHILE = 376,
-    INT_VAL = 377,
-    UINT_VAL = 378,
-    LONG_VAL = 379,
-    ULONG_VAL = 380,
-    FLOAT_VAL = 381,
-    DOUBLE_VAL = 382,
-    DECIMAL_VAL = 383,
-    CHAR_VAL = 384,
-    ENTER = 385,
-    END_OF_FILE = 386,
-    BYTE_VAL = 387,
-    SBYTE_VAL = 388,
-    SHORT_VAL = 389,
-    USHORT_VAL = 390,
-    STRING_VAL = 391
+    LONG_TYPE = 340,
+    NEW = 341,
+    NULL_VALUE = 342,
+    OBJECT = 343,
+    OPERATOR = 344,
+    OUT = 345,
+    OVERRIDE = 346,
+    PARAMS = 347,
+    PRIVATE = 348,
+    PROTECTED = 349,
+    PUBLIC = 350,
+    READONLY = 351,
+    REF = 352,
+    RETURN = 353,
+    SBYTE_TYPE = 354,
+    SEALED = 355,
+    SHORT_TYPE = 356,
+    SIZEOF = 357,
+    STACKALLOC = 358,
+    STATIC = 359,
+    STRING_TYPE = 360,
+    STRUCT = 361,
+    SWITCH = 362,
+    THIS = 363,
+    TRUE_VAL = 364,
+    TYPEOF = 365,
+    UINT_TYPE = 366,
+    ULONG_TYPE = 367,
+    UNCHECKED = 368,
+    UNSAFE = 369,
+    USHORT_TYPE = 370,
+    VIRTUAL = 371,
+    VOID = 372,
+    WHILE = 373,
+    INT_VAL = 374,
+    UINT_VAL = 375,
+    LONG_VAL = 376,
+    ULONG_VAL = 377,
+    FLOAT_VAL = 378,
+    DOUBLE_VAL = 379,
+    DECIMAL_VAL = 380,
+    CHAR_VAL = 381,
+    ENTER = 382,
+    END_OF_FILE = 383,
+    BYTE_VAL = 384,
+    SBYTE_VAL = 385,
+    SHORT_VAL = 386,
+    USHORT_VAL = 387,
+    STRING_VAL = 388
   };
 #endif
 
