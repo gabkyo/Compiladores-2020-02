@@ -179,7 +179,9 @@ extern int yydebug;
     SBYTE_VAL = 385,
     SHORT_VAL = 386,
     USHORT_VAL = 387,
-    STRING_VAL = 388
+    STRING_VAL = 388,
+    LOW = 389,
+    INNER_PAR = 390
   };
 #endif
 

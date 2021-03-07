@@ -355,8 +355,8 @@ static void yynoreturn yy_fatal_error ( const char* msg  );
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 	(yy_c_buf_p) = yy_cp;
-#define YY_NUM_RULES 136
-#define YY_END_OF_BUFFER 137
+#define YY_NUM_RULES 133
+#define YY_END_OF_BUFFER 134
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -364,7 +364,7 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[546] =
+static const flex_int16_t yy_accept[533] =
     {   0,
         0,    0,  134,  133,    1,   16,  133,   15,   26,  133,
         5,    6,   14,   11,   21,   12,   22,   13,  121,  121,
@@ -470,7 +470,7 @@ static const YY_CHAR yy_meta[71] =
         3,    3,    3,    3,    3,    3,    1,    1,    1,    1
     } ;
 
-static const flex_int16_t yy_base[555] =
+static const flex_int16_t yy_base[542] =
     {   0,
         0,    0, 1129, 1130, 1130, 1105, 1121, 1103,   63,   63,
      1130, 1130, 1102,   60, 1130,   59, 1130,   64,   70,   75,
@@ -534,7 +534,7 @@ static const flex_int16_t yy_base[555] =
       990
     } ;
 
-static const flex_int16_t yy_def[555] =
+static const flex_int16_t yy_def[542] =
     {   0,
       532,    1,  532,  532,  532,  532,  533,  532,  532,  534,
       532,  532,  532,  532,  532,  532,  532,  532,  532,  532,
@@ -598,7 +598,7 @@ static const flex_int16_t yy_def[555] =
       532
     } ;
 
-static const flex_int16_t yy_nxt[1225] =
+static const flex_int16_t yy_nxt[1201] =
     {   0,
         4,    5,    5,    5,    6,    7,    8,    9,   10,   11,
        12,   13,   14,   15,   16,   17,   18,   19,   20,   21,
@@ -734,7 +734,7 @@ static const flex_int16_t yy_nxt[1225] =
 
     } ;
 
-static const flex_int16_t yy_chk[1225] =
+static const flex_int16_t yy_chk[1201] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -905,7 +905,7 @@ long long TreatIntString(char *text);
 long long TreatHexString(char *text);
 int CheckRealType(char *text);
 
-#line 918 "src/Scanner/scanner.c"
+#line 909 "src/Scanner/scanner.c"
 /* character_literal '\''{character}'\''
 
 character .|{simple_escape_sequence}|{hexadecimal_escape_sequence}
@@ -913,7 +913,7 @@ character .|{simple_escape_sequence}|{hexadecimal_escape_sequence}
 simple_escape_sequence '\\\''|'\\"'|'\\\\'|'\\0'|'\\a'|'\\b'|'\\f'|'\\n'|'\\r'|'\\t'|'\\v'
 
 hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[a-f]|[A-F])?([0-9]|[a-f]|[A-F])? */
-#line 926 "src/Scanner/scanner.c"
+#line 917 "src/Scanner/scanner.c"
 
 #define INITIAL 0
 
@@ -1131,7 +1131,7 @@ YY_DECL
 #line 49 "src/Scanner/c-sharp.l"
 
 
-#line 1144 "src/Scanner/scanner.c"
+#line 1135 "src/Scanner/scanner.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1158,7 +1158,7 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 546 )
+				if ( yy_current_state >= 533 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1837,24 +1837,26 @@ YY_RULE_SETUP
 case 130:
 YY_RULE_SETUP
 #line 187 "src/Scanner/c-sharp.l"
-{ return CHAR_VAL; }
+{ printf("CHAR_VAL");return CHAR_VAL; }
 	YY_BREAK
 case 131:
 YY_RULE_SETUP
 #line 189 "src/Scanner/c-sharp.l"
-{ return ENTER; }
+{ printf("ENTER");return ENTER; }
 	YY_BREAK
 case 132:
 YY_RULE_SETUP
 #line 191 "src/Scanner/c-sharp.l"
-{ return STRING_VAL; }
+{ printf("STRING_VAL");return STRING_VAL; }
 	YY_BREAK
 case 133:
 YY_RULE_SETUP
 #line 193 "src/Scanner/c-sharp.l"
 ECHO;
 	YY_BREAK
-#line 1887 "src/Scanner/scanner.c"
+#line 1858 "src/Scanner/scanner.c"
+case YY_STATE_EOF(INITIAL):
+	yyterminate();
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2149,7 +2151,7 @@ static int yy_get_next_buffer (void)
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 546 )
+			if ( yy_current_state >= 533 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -2177,11 +2179,11 @@ static int yy_get_next_buffer (void)
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 546 )
+		if ( yy_current_state >= 533 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 545);
+	yy_is_jam = (yy_current_state == 532);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -2820,7 +2822,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 197 "src/Scanner/c-sharp.l"
+#line 193 "src/Scanner/c-sharp.l"
 
 
 int CheckIntType(long long value, char *suffix)
