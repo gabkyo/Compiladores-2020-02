@@ -81,7 +81,7 @@ enum_list:
     IDENTIFIER ASSIGN value;
 
 /* Statement rules: */
-statement_list: statement_list statement | statement;
+statement_list: statement_list statement | statement | %empty;
 statement: obj_decl | method_decl_statement | operator_overloading | attr_decl_statement | var_decl_statement | if_else_statement | switch_statement | while_statement | do_while_statement | for_statement | foreach_statement | return_statement | checked_scope | unchecked_scope | unsafe_scope | fixed_scope | label | go_to_statement | expression SEMI | SEMI;
 
 /* Method declaration statement rules: */
