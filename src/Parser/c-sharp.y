@@ -47,12 +47,15 @@ program: obj_decl_list;
 /* Object declaration rules: */
 obj_decl_list: obj_decl_list obj_decl | obj_decl | %empty;
 obj_decl: class_decl | struct_decl | interface_decl | enum_decl;
+class_father:
+    COLON IDENTIFIER |
+    %empty
 class_decl:
-    scope CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
-    modifier_list CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
-    scope modifier_list CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
-    modifier_list scope CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
-    CLASS IDENTIFIER START_CURLY statement_list END_CURLY;
+    scope CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY |
+    modifier_list CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY |
+    scope modifier_list CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY |
+    modifier_list scope CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY |
+    CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY;
 struct_decl:
     scope STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
     modifier_list STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
@@ -202,17 +205,17 @@ obj_instancing:
 
 /* Assignment expression rules: */
 assignment_expressions:
-    IDENTIFIER ASSIGN expression |
-    IDENTIFIER ADD_ASSIGN expression |
-    IDENTIFIER SUB_ASSIGN expression |
-    IDENTIFIER MUL_ASSIGN expression |
-    IDENTIFIER DIV_ASSIGN expression |
-    IDENTIFIER MOD_ASSIGN expression |
-    IDENTIFIER BIT_AND_ASSIGN expression |
-    IDENTIFIER BIT_OR_ASSIGN expression |
-    IDENTIFIER CIRCUMFLEX_ASSIGN expression |
-    IDENTIFIER RIGHT_SHIFT_ASSIGN expression |
-    IDENTIFIER LEFT_SHIFT_ASSIGN expression;
+    attr_access ASSIGN expression |
+    attr_access ADD_ASSIGN expression |
+    attr_access SUB_ASSIGN expression |
+    attr_access MUL_ASSIGN expression |
+    attr_access DIV_ASSIGN expression |
+    attr_access MOD_ASSIGN expression |
+    attr_access BIT_AND_ASSIGN expression |
+    attr_access BIT_OR_ASSIGN expression |
+    attr_access CIRCUMFLEX_ASSIGN expression |
+    attr_access RIGHT_SHIFT_ASSIGN expression |
+    attr_access LEFT_SHIFT_ASSIGN expression;
 
 /* Unary operations expression rules: */
 unary_operations:
@@ -260,7 +263,7 @@ ternary_operations:
 /* variable and data accessing expression rules: */
 attr_access:
     IDENTIFIER DOT attr_access |
-    IDENTIFIER DOT IDENTIFIER |
+    IDENTIFIER |
     THIS DOT attr_access |
     THIS DOT IDENTIFIER |
     BASE DOT attr_access |
