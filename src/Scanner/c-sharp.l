@@ -184,11 +184,11 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 
 {sign}?{real_literal} { return CheckRealType(yytext); }
 
-("'"."'"|"'\\n'"|"'\\t'"|"'\\a'"|"'\\0'"|"'\\r'"|"'\\b'"|"'\\v'") { return CHAR_VAL; }
+("'"."'"|"'\\n'"|"'\\t'"|"'\\a'"|"'\\0'"|"'\\r'"|"'\\b'"|"'\\v'") { printf("CHAR_VAL");return CHAR_VAL; }
 
-"\\n" { return ENTER; }
+"\\n" { printf("ENTER");return ENTER; }
 
-(\".*?\") { return STRING_VAL; }
+(\".*?\") { printf("STRING_VAL");return STRING_VAL; }
 
 %%
 
