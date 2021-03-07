@@ -47,12 +47,15 @@ program: obj_decl_list;
 /* Object declaration rules: */
 obj_decl_list: obj_decl_list obj_decl | obj_decl | %empty;
 obj_decl: class_decl | struct_decl | interface_decl | enum_decl;
+class_father:
+    COLON IDENTIFIER |
+    %empty
 class_decl:
-    scope CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
-    modifier_list CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
-    scope modifier_list CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
-    modifier_list scope CLASS IDENTIFIER START_CURLY statement_list END_CURLY |
-    CLASS IDENTIFIER START_CURLY statement_list END_CURLY;
+    scope CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY |
+    modifier_list CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY |
+    scope modifier_list CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY |
+    modifier_list scope CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY |
+    CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY;
 struct_decl:
     scope STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
     modifier_list STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
