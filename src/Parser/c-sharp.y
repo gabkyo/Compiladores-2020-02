@@ -13,7 +13,7 @@ extern int yylineno;
 
 %}
 
-%token IDENTIFIER START_PAR END_PAR START_CURLY END_CURLY START_BRCKT END_BRCKT ADD SUB DIV MUL MOD NOT QMARK CIRCUMFLEX COLON SEMI COMMA DOT ASSIGN LESS_THEN GREATER_THEN BIT_AND BIT_OR BIT_NOT EQ GEQ LEQ NOT_EQ ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN BIT_AND_ASSIGN BIT_OR_ASSIGN CIRCUMFLEX_ASSIGN LEFT_SHIFT RIGHT_SHIFT AND OR DOUBLE_QMARK INCREMENT DECREMENT LAMBDA LEFT_SHIFT_ASSIGN RIGHT_SHIFT_ASSIGN ABSTRACT AS BASE BOOL_TYPE BREAK BYTE_TYPE CASE CHAR_TYPE CHECKED CLASS CONST CONTINUE DECIMAL_TYPE DEFAULT DELEGATE DO DOUBLE_TYPE ELSE ENUM EVENT EXPLICIT EXTERN FALSE_VAL FIXED FLOAT_TYPE FOR FOREACH GOTO IF IMPLICIT IN INT_TYPE INTERFACE INTERNAL IS LONG_TYPE NEW NULL_VALUE OBJECT OPERATOR OUT OVERRIDE PARAMS PRIVATE PROTECTED PUBLIC READONLY REF RETURN SBYTE_TYPE SEALED SHORT_TYPE SIZEOF STACKALLOC STATIC STRING_TYPE STRUCT SWITCH THIS TRUE_VAL TYPEOF UINT_TYPE ULONG_TYPE UNCHECKED UNSAFE USHORT_TYPE VIRTUAL VOID WHILE INT_VAL UINT_VAL LONG_VAL ULONG_VAL FLOAT_VAL DOUBLE_VAL DECIMAL_VAL CHAR_VAL ENTER END_OF_FILE BYTE_VAL SBYTE_VAL SHORT_VAL USHORT_VAL STRING_VAL
+%token IDENTIFIER START_PAR END_PAR START_CURLY END_CURLY START_BRCKT END_BRCKT ADD SUB DIV MUL MOD NOT QMARK BIT_XOR COLON SEMI COMMA DOT ASSIGN LESS_THEN GREATER_THEN BIT_AND BIT_OR BIT_NOT EQ GEQ LEQ NOT_EQ ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN BIT_AND_ASSIGN BIT_OR_ASSIGN BIT_XOR_ASSIGN LEFT_SHIFT RIGHT_SHIFT AND OR DOUBLE_QMARK INCREMENT DECREMENT LAMBDA LEFT_SHIFT_ASSIGN RIGHT_SHIFT_ASSIGN ABSTRACT AS BASE BOOL_TYPE BREAK BYTE_TYPE CASE CHAR_TYPE CHECKED CLASS CONST CONTINUE DECIMAL_TYPE DEFAULT DELEGATE DO DOUBLE_TYPE ELSE ENUM EVENT EXPLICIT EXTERN FALSE_VAL FIXED FLOAT_TYPE FOR FOREACH GOTO IF IMPLICIT IN INT_TYPE INTERFACE INTERNAL IS LONG_TYPE NEW NULL_VALUE OBJECT OPERATOR OUT OVERRIDE PARAMS PRIVATE PROTECTED PUBLIC READONLY REF RETURN SBYTE_TYPE SEALED SHORT_TYPE SIZEOF STACKALLOC STATIC STRING_TYPE STRUCT SWITCH THIS TRUE_VAL TYPEOF UINT_TYPE ULONG_TYPE UNCHECKED UNSAFE USHORT_TYPE VIRTUAL VOID WHILE INT_VAL UINT_VAL LONG_VAL ULONG_VAL FLOAT_VAL DOUBLE_VAL DECIMAL_VAL CHAR_VAL ENTER END_OF_FILE BYTE_VAL SBYTE_VAL SHORT_VAL USHORT_VAL STRING_VAL
 
 // EZ: Criando pelo menos dois níveis de precedência para indicar nas regras
 // com conflito de Shift/Reduce.
@@ -21,6 +21,19 @@ extern int yylineno;
 %precedence LOW
 // Prioridade alta. Podemos colocar todos os tokens em conflito aqui.
 %precedence INNER_PAR ELSE ABSTRACT CLASS CONST ENUM EVENT EXPLICIT EXTERN IMPLICIT INTERFACE INTERNAL NEW OUT OVERRIDE PARAMS PRIVATE PROTECTED PUBLIC READONLY REF SEALED STATIC STRUCT UNSAFE VIRTUAL
+
+%right ASSIGN ADD_ASSIGN DIV_ASSIGN MOD_ASSIGN MUL_ASSIGN SUB_ASSIGN BIT_OR_ASSIGN BIT_AND_ASSIGN BIT_XOR_ASSIGN RIGHT_SHIFT_ASSIGN LEFT_SHIFT_ASSIGN
+%left OR
+%left AND
+%left BIT_OR
+%left BIT_XOR
+%left BIT_AND
+%left EQ NOT_EQ
+%left LESS_THEN GREATER_THEN LEQ GEQ
+%left LEFT_SHIFT RIGHT_SHIFT
+%left ADD SUB
+%left MUL DIV MOD
+%right BIT_NOT NOT
 
 %start program
 
@@ -116,15 +129,14 @@ program: obj_decl_list;
 
 /* Object declaration rules: */
 obj_decl_list: 
-  obj_decl_list obj_decl 
-| obj_decl
-| %empty %prec LOW
-;
+    obj_decl_list obj_decl |
+    obj_decl |
+    %empty %prec LOW;
 
 obj_decl: class_decl | struct_decl | interface_decl | enum_decl;
 class_father:
     COLON IDENTIFIER |
-    %empty
+    %empty %prec LOW
 class_decl:
     scope CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY %prec LOW |
     modifier_list CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY |
@@ -132,19 +144,19 @@ class_decl:
     modifier_list scope CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY |
     CLASS IDENTIFIER class_father START_CURLY statement_list END_CURLY;
 struct_decl:
-    scope STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
+    scope STRUCT IDENTIFIER START_CURLY statement_list END_CURLY %prec LOW |
     modifier_list STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
     scope modifier_list STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
     modifier_list scope STRUCT IDENTIFIER START_CURLY statement_list END_CURLY |
     STRUCT IDENTIFIER START_CURLY statement_list END_CURLY;
 interface_decl:
-    scope INTERFACE IDENTIFIER START_CURLY statement_list END_CURLY |
+    scope INTERFACE IDENTIFIER START_CURLY statement_list END_CURLY %prec LOW |
     modifier_list INTERFACE IDENTIFIER START_CURLY statement_list END_CURLY |
     scope modifier_list INTERFACE IDENTIFIER START_CURLY statement_list END_CURLY |
     modifier_list scope INTERFACE IDENTIFIER START_CURLY statement_list END_CURLY |
     INTERFACE IDENTIFIER START_CURLY statement_list END_CURLY;
 enum_decl:
-    scope ENUM IDENTIFIER START_CURLY enum_list END_CURLY |
+    scope ENUM IDENTIFIER START_CURLY enum_list END_CURLY %prec LOW |
     modifier_list ENUM IDENTIFIER START_CURLY enum_list END_CURLY |
     scope modifier_list ENUM IDENTIFIER START_CURLY enum_list END_CURLY |
     modifier_list scope ENUM IDENTIFIER START_CURLY enum_list END_CURLY |
@@ -201,7 +213,7 @@ method_body: START_CURLY statement_list END_CURLY | LAMBDA expression | SEMI;
 parameter: type IDENTIFIER %prec LOW  | type IDENTIFIER expression | modifier_list type IDENTIFIER %prec LOW | modifier_list type IDENTIFIER expression;
 
 /* Operator overloading: */
-operator: INCREMENT | DECREMENT | ADD | SUB | MUL | DIV | MOD | RIGHT_SHIFT | LEFT_SHIFT | AND | OR | LESS_THEN | GREATER_THEN | LEQ | GEQ | EQ | NOT_EQ | BIT_AND | BIT_OR | DOUBLE_QMARK | CIRCUMFLEX | QMARK;
+operator: INCREMENT | DECREMENT | ADD | SUB | MUL | DIV | MOD | RIGHT_SHIFT | LEFT_SHIFT | AND | OR | LESS_THEN | GREATER_THEN | LEQ | GEQ | EQ | NOT_EQ | BIT_AND | BIT_OR | DOUBLE_QMARK | BIT_XOR | QMARK;
 operator_overloading:
     VOID OPERATOR operator START_PAR END_PAR method_body |
     VOID OPERATOR operator START_PAR parameter_list END_PAR method_body |
@@ -234,7 +246,7 @@ return_statement: RETURN expression | RETURN value SEMI | RETURN IDENTIFIER SEMI
 var_decl_statement:
     type id_list SEMI |
     modifier type id_list SEMI;
-attr_decl_statement:
+
 // EZ: Aqui dá para ver o conflito: attr_decl_statement gera var_decl_statement.
 // Assim temos duas derivações possíveis:
 // statement => var_decl_statement => IDENTIFIER
@@ -244,6 +256,7 @@ attr_decl_statement:
 // modificar as regras de forma sensata. Olhando esse caso, me parece que não
 // é necessário que a primeira derivação sempre faz mais sentido. Neste caso,
 // basta retirar a regra abaixo. Isso elimina 85 conflitos de R/R de uma vez... :)
+attr_decl_statement:
     //var_decl_statement |
     scope type id_list SEMI |
     modifier_list scope type id_list SEMI |
@@ -273,9 +286,8 @@ id_list:
 // colocamos o token envolvido no conflito com a prioridade maior. Isso vai
 // priorizar o shift no lugar do reduce, que é o que queremos aqui.
 if_else_statement:
- if_statement %prec LOW
- | if_statement else_statement %prec ELSE
-;
+    if_statement %prec LOW |
+    if_statement else_statement %prec ELSE;
 
 if_statement:
     IF START_PAR expression END_PAR START_CURLY statement_list END_CURLY |
@@ -335,7 +347,7 @@ assignment_expressions:
     attr_access MOD_ASSIGN expression |
     attr_access BIT_AND_ASSIGN expression |
     attr_access BIT_OR_ASSIGN expression |
-    attr_access CIRCUMFLEX_ASSIGN expression |
+    attr_access BIT_XOR_ASSIGN expression |
     attr_access RIGHT_SHIFT_ASSIGN expression |
     attr_access LEFT_SHIFT_ASSIGN expression;
 
@@ -373,7 +385,7 @@ binary_operations:
     expression BIT_AND expression |
     expression BIT_OR expression |
     expression DOUBLE_QMARK expression |
-    expression CIRCUMFLEX expression |
+    expression BIT_XOR expression |
     expression IS expression |
     expression AS expression |
     expression IN expression;

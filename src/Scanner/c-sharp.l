@@ -67,7 +67,7 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 "%" { printf("MOD\n");return MOD; }
 "!" { printf("NOT\n");return NOT; }
 "?" { printf("QMARK\n");return QMARK; }
-"^" { printf("CIRCUMFLEX\n");return CIRCUMFLEX; }
+"^" { printf("BIT_XOR\n");return BIT_XOR; }
 ":" { printf("COLON\n");return COLON; }
 ";" { printf("SEMI\n");return SEMI; }
 "," { printf("COMMA\n");return COMMA; }
@@ -89,7 +89,7 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 "%=" { printf("MOD_ASSIGN\n");return MOD_ASSIGN; }
 "&=" { printf("BIT_AND_ASSIGN\n");return BIT_AND_ASSIGN; }
 "|=" { printf("BIT_OR_ASSIGN\n");return BIT_OR_ASSIGN; }
-"^=" { printf("CIRCUMFLEX_ASSIGN\n");return CIRCUMFLEX_ASSIGN; }
+"^=" { printf("BIT_XOR_ASSIGN\n");return BIT_XOR_ASSIGN; }
 "<<" { printf("LEFT_SHIFT\n");return LEFT_SHIFT; }
 ">>" { printf("RIGHT_SHIFT\n");return RIGHT_SHIFT; }
 "&&" { printf("AND\n");return AND; }
