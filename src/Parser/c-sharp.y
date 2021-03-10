@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int yylex(void);
-void yyerror(char const *s);
+extern int yylex(void);
+extern void yyerror(char const *s);
 
 extern int yylineno;
 
@@ -35,9 +35,21 @@ extern int yylineno;
 %left MUL DIV MOD
 %right BIT_NOT NOT
 
+%precedence HIGH
+%precedence HIGHER
+
 %start program
 
 %%
+
+/* Program rule: */
+program: obj_decl_list;
+
+/* Object declaration rules: */
+obj_decl_list: 
+    obj_decl_list obj_decl |
+    obj_decl |
+    %empty %prec LOW;
 
 /* Useful rules: */
 scope: PRIVATE | PUBLIC | PROTECTED | INTERNAL | PROTECTED INTERNAL;
@@ -46,20 +58,20 @@ modifier: STATIC | CONST | OVERRIDE | VIRTUAL | READONLY | REF | OUT | NEW | ABS
 
 /* Type definition rules: */
 type: simple_type | nullable_type | matrix_type | IDENTIFIER %prec LOW | OBJECT;
-nullable_type: simple_type QMARK | IDENTIFIER QMARK;
+nullable_type: simple_type QMARK | IDENTIFIER QMARK %prec LOW;
 simple_type: BOOL_TYPE | numeric_type | STRING_TYPE;
 numeric_type: integer_type | floating_type | DECIMAL_TYPE;
 integer_type: SBYTE_TYPE | BYTE_TYPE | SHORT_TYPE | USHORT_TYPE | INT_TYPE | UINT_TYPE | LONG_TYPE | ULONG_TYPE | CHAR_TYPE;
 floating_type: FLOAT_TYPE | DOUBLE_TYPE;
 matrix_type:
-    type START_BRCKT END_BRCKT |
-    type START_BRCKT dimensions_def END_BRCKT |
-    type START_BRCKT dimensions_undef END_BRCKT;
+    type START_BRCKT END_BRCKT %prec LOW |
+    type START_BRCKT dimensions_def END_BRCKT %prec LOW |
+    type START_BRCKT dimensions_undef END_BRCKT %prec LOW;
 dimensions_def: dimensions_def COMMA numeric_val | numeric_val;
-dimensions_undef: dimensions_undef COMMA | %empty;
+dimensions_undef: dimensions_undef COMMA | %empty %prec LOW;
 
-value: INT_VAL | TRUE_VAL | FALSE_VAL | BYTE_VAL | CHAR_VAL | LONG_VAL | UINT_VAL | FLOAT_VAL | SBYTE_VAL | SHORT_VAL | ULONG_VAL | STRING_VAL | USHORT_VAL | DECIMAL_VAL | DOUBLE_VAL | NULL_VALUE;
-numeric_val: BYTE_VAL | CHAR_VAL | LONG_VAL | UINT_VAL | FLOAT_VAL | SBYTE_VAL | SHORT_VAL | ULONG_VAL | USHORT_VAL | DECIMAL_VAL;
+value: INT_VAL %prec LOW | TRUE_VAL %prec LOW | FALSE_VAL %prec LOW | BYTE_VAL %prec LOW | CHAR_VAL %prec LOW | LONG_VAL %prec LOW | UINT_VAL %prec LOW | FLOAT_VAL %prec LOW | SBYTE_VAL %prec LOW | SHORT_VAL %prec LOW | ULONG_VAL %prec LOW | STRING_VAL %prec LOW | USHORT_VAL %prec LOW | DECIMAL_VAL %prec LOW | DOUBLE_VAL %prec LOW | NULL_VALUE %prec LOW;
+numeric_val: BYTE_VAL %prec LOW | CHAR_VAL %prec LOW | LONG_VAL %prec LOW | UINT_VAL %prec LOW | FLOAT_VAL %prec LOW | SBYTE_VAL %prec LOW | SHORT_VAL %prec LOW | ULONG_VAL %prec LOW | USHORT_VAL %prec LOW | DECIMAL_VAL %prec LOW;
 
 // Conflito S/R
 // State 0
@@ -124,15 +136,6 @@ numeric_val: BYTE_VAL | CHAR_VAL | LONG_VAL | UINT_VAL | FLOAT_VAL | SBYTE_VAL |
 // vazia de obj_decl_list e incluir todos os tokens conflitantes na prioridade
 // alta. Isso elimina 23 conflitos de S/R.
 
-/* Program rule: */
-program: obj_decl_list;
-
-/* Object declaration rules: */
-obj_decl_list: 
-    obj_decl_list obj_decl |
-    obj_decl |
-    %empty %prec LOW;
-
 obj_decl: class_decl | struct_decl | interface_decl | enum_decl;
 class_father:
     COLON IDENTIFIER |
@@ -163,7 +166,7 @@ enum_decl:
     ENUM IDENTIFIER START_CURLY enum_list END_CURLY;
 enum_list:
     enum_list COMMA IDENTIFIER |
-    enum_list COMMA IDENTIFIER ASSIGN value |
+    enum_list COMMA IDENTIFIER ASSIGN value %prec HIGHER|
     IDENTIFIER |
     IDENTIFIER ASSIGN value;
 
@@ -185,7 +188,7 @@ enum_list:
 // attr_decl_statement ali embaixo.
 
 /* Statement rules: */
-statement_list: statement_list statement | statement | %empty %prec LOW;
+statement_list: statement_list statement %prec HIGHER | statement | %empty %prec LOW;
 statement: obj_decl | method_decl_statement | operator_overloading | attr_decl_statement | var_decl_statement | if_else_statement | switch_statement | while_statement | do_while_statement | for_statement | foreach_statement | return_statement | checked_scope | unchecked_scope | unsafe_scope | fixed_scope | label | go_to_statement | expression SEMI | SEMI;
 
 /* Method declaration statement rules: */
@@ -215,22 +218,22 @@ parameter: type IDENTIFIER %prec LOW  | type IDENTIFIER expression | modifier_li
 /* Operator overloading: */
 operator: INCREMENT | DECREMENT | ADD | SUB | MUL | DIV | MOD | RIGHT_SHIFT | LEFT_SHIFT | AND | OR | LESS_THEN | GREATER_THEN | LEQ | GEQ | EQ | NOT_EQ | BIT_AND | BIT_OR | DOUBLE_QMARK | BIT_XOR | QMARK;
 operator_overloading:
-    VOID OPERATOR operator START_PAR END_PAR method_body |
-    VOID OPERATOR operator START_PAR parameter_list END_PAR method_body |
-    type OPERATOR operator START_PAR END_PAR method_body |
-    type OPERATOR operator START_PAR parameter_list END_PAR method_body |
-    scope VOID OPERATOR operator START_PAR END_PAR method_body |
-    scope VOID OPERATOR operator START_PAR parameter_list END_PAR method_body |
-    scope type OPERATOR operator START_PAR END_PAR method_body |
-    scope type OPERATOR operator START_PAR parameter_list END_PAR method_body |
-    scope modifier_list VOID OPERATOR operator START_PAR END_PAR method_body |
-    scope modifier_list VOID OPERATOR operator START_PAR parameter_list END_PAR method_body |
-    scope modifier_list type OPERATOR operator START_PAR END_PAR method_body |
-    scope modifier_list type OPERATOR operator START_PAR parameter_list END_PAR method_body |
-    modifier_list scope VOID OPERATOR operator START_PAR END_PAR method_body |
-    modifier_list scope VOID OPERATOR operator START_PAR parameter_list END_PAR method_body |
-    modifier_list scope type OPERATOR operator START_PAR END_PAR method_body |
-    modifier_list scope type OPERATOR operator START_PAR parameter_list END_PAR method_body;
+    VOID OPERATOR operator START_PAR END_PAR method_body %prec LOW |
+    VOID OPERATOR operator START_PAR parameter_list END_PAR method_body %prec LOW |
+    type OPERATOR operator START_PAR END_PAR method_body %prec LOW |
+    type OPERATOR operator START_PAR parameter_list END_PAR method_body %prec LOW |
+    scope VOID OPERATOR operator START_PAR END_PAR method_body %prec LOW |
+    scope VOID OPERATOR operator START_PAR parameter_list END_PAR method_body %prec LOW |
+    scope type OPERATOR operator START_PAR END_PAR method_body %prec LOW |
+    scope type OPERATOR operator START_PAR parameter_list END_PAR method_body %prec LOW |
+    scope modifier_list VOID OPERATOR operator START_PAR END_PAR method_body %prec LOW |
+    scope modifier_list VOID OPERATOR operator START_PAR parameter_list END_PAR method_body %prec LOW |
+    scope modifier_list type OPERATOR operator START_PAR END_PAR method_body %prec LOW |
+    scope modifier_list type OPERATOR operator START_PAR parameter_list END_PAR method_body %prec LOW |
+    modifier_list scope VOID OPERATOR operator START_PAR END_PAR method_body %prec LOW |
+    modifier_list scope VOID OPERATOR operator START_PAR parameter_list END_PAR method_body %prec LOW |
+    modifier_list scope type OPERATOR operator START_PAR END_PAR method_body %prec LOW |
+    modifier_list scope type OPERATOR operator START_PAR parameter_list END_PAR method_body %prec LOW;
 
 /* Delegate declaration statement rules: */
 delegate_decl_statement:
@@ -240,7 +243,7 @@ delegate_decl_statement:
     DELEGATE type IDENTIFIER START_PAR END_PAR;
 
 /* return statement: */
-return_statement: RETURN expression | RETURN value SEMI | RETURN IDENTIFIER SEMI;
+return_statement: RETURN expression;
 
 /* Attribute and variable declaration statement rules: */
 var_decl_statement:
@@ -299,10 +302,10 @@ else_statement:
 /* switch statement rules: */
 switch_statement: SWITCH START_PAR expression END_PAR START_CURLY cases_list END_CURLY;
 cases_list:
-    cases_list CASE expression COLON statement_list BREAK SEMI |
-    cases_list DEFAULT COLON statement_list BREAK SEMI |
-    CASE expression COLON statement_list BREAK SEMI |
-    DEFAULT COLON statement_list BREAK SEMI;
+    cases_list CASE expression COLON statement_list |
+    cases_list DEFAULT COLON statement_list |
+    CASE expression COLON statement_list |
+    DEFAULT COLON statement_list;
 
 /* loop statement rules: */
 loop_body: START_CURLY statement_list END_CURLY | statement;
@@ -326,11 +329,11 @@ unsafe_scope: UNSAFE START_CURLY statement_list END_CURLY;
 fixed_scope: FIXED START_PAR expression END_PAR START_CURLY statement_list END_CURLY;
 
 /* goto and label statements: */
-label: IDENTIFIER COLON;
+label: IDENTIFIER COLON %prec LOW;
 go_to_statement: GOTO IDENTIFIER;
 
 /* Expression rules: */
-expression: value | IDENTIFIER | START_PAR expression END_PAR %prec INNER_PAR | assignment_expressions | unary_operations | binary_operations | ternary_operations | method_invoking | attr_access | obj_instancing | matrix_indexing | matrix_instancing | CONTINUE | BREAK;
+expression: value | START_PAR expression END_PAR %prec HIGH | assignment_expressions | unary_operations | binary_operations | ternary_operations | method_invoking | attr_access | obj_instancing | matrix_indexing | matrix_instancing | CONTINUE | BREAK %prec HIGH;
 
 /* Object instancing expression rules: */
 obj_instancing:
@@ -353,14 +356,14 @@ assignment_expressions:
 
 /* Unary operations expression rules: */
 unary_operations:
-    expression INCREMENT |
-    expression DECREMENT |
-    INCREMENT expression |
-    DECREMENT expression |
-    ADD expression |
-    SUB expression |
-    BIT_NOT expression |
-    NOT expression |
+    expression INCREMENT %prec HIGHER |
+    expression DECREMENT %prec HIGHER |
+    INCREMENT expression %prec HIGH |
+    DECREMENT expression %prec HIGH |
+    ADD expression %prec HIGH |
+    SUB expression %prec HIGH |
+    BIT_NOT expression %prec HIGH |
+    NOT expression %prec HIGH |
     TYPEOF START_PAR expression END_PAR |
     SIZEOF START_PAR expression END_PAR |
     STACKALLOC START_PAR expression END_PAR;
@@ -396,8 +399,8 @@ ternary_operations:
 
 /* variable and data accessing expression rules: */
 attr_access:
-    IDENTIFIER DOT attr_access |
-    IDENTIFIER |
+    IDENTIFIER DOT attr_access %prec HIGH |
+    IDENTIFIER %prec HIGHER |
     THIS DOT attr_access |
     BASE DOT attr_access;
 
@@ -408,15 +411,14 @@ method_invoking:
 argument_list:
     argument_list argument |
     argument |
-    %empty;
+    %empty %prec LOW;
 
 argument: expression | modifier expression;
 
 /* Vector and matrix expressions: */
-matrix_indexing: expression START_BRCKT dimensions_def END_BRCKT;
+matrix_indexing: expression START_BRCKT dimensions_def END_BRCKT %prec HIGHER;
 
-matrix_instancing: NEW type START_BRCKT dimensions_def END_BRCKT;
-
+matrix_instancing: NEW type START_BRCKT dimensions_def END_BRCKT %prec HIGHER;
 
 %%
 

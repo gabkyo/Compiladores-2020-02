@@ -17,7 +17,7 @@ scanner:
 	flex -o src/Scanner/scanner.c src/Scanner/c-sharp.l
 
 parser:
-	bison -v -o src/Parser/parser.c src/Parser/c-sharp.y --defines=include/Parser/parser.h
+	bison -v -o src/Parser/parser.c src/Parser/c-sharp.y --defines=include/Parser/parser.h --report=all
 
 precomp_header:
 	gcc include/pch.h

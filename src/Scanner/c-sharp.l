@@ -46,13 +46,13 @@ simple_escape_sequence '\\\''|'\\"'|'\\\\'|'\\0'|'\\a'|'\\b'|'\\f'|'\\n'|'\\r'|'
 
 hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[a-f]|[A-F])?([0-9]|[a-f]|[A-F])? */
 
+/*{identifier_with_at} { printf("IDENTIFIER\n");return IDENTIFIER; }*/
 %%
 
 (" "|\t|\n) { /* ignoring white spaces */ }
 "//".* { /* singleline comments are ignored*/ }
 "/*""*"*(^"/"^"*")*"*"*"*/" { /* multiline comments are ignored */ }
 
-{identifier_with_at} { printf("IDENTIFIER\n");return IDENTIFIER; }
 
 "(" { printf("START_PAR\n");return START_PAR; }
 ")" { printf("END_PAR\n");return END_PAR; }
