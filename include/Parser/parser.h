@@ -177,9 +177,10 @@ extern int yydebug;
     USHORT_VAL = 387,
     STRING_VAL = 388,
     LOW = 389,
-    INNER_PAR = 390,
-    HIGH = 391,
-    HIGHER = 392
+    TERNARY_IF = 390,
+    INNER_PAR = 391,
+    HIGH = 392,
+    HIGHER = 393
   };
 #endif
 

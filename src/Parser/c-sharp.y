@@ -19,8 +19,9 @@ extern int yylineno;
 // com conflito de Shift/Reduce.
 // Proridade baixa.
 %precedence LOW
+%precedence TERNARY_IF
 // Prioridade alta. Podemos colocar todos os tokens em conflito aqui.
-%precedence INNER_PAR ELSE ABSTRACT CLASS CONST ENUM EVENT EXPLICIT EXTERN IMPLICIT INTERFACE INTERNAL NEW OUT OVERRIDE PARAMS PRIVATE PROTECTED PUBLIC READONLY REF SEALED STATIC STRUCT UNSAFE VIRTUAL
+%precedence INNER_PAR ELSE ABSTRACT CLASS CONST ENUM EVENT EXPLICIT EXTERN IMPLICIT INTERFACE INTERNAL NEW OUT OVERRIDE PARAMS PRIVATE PROTECTED PUBLIC READONLY REF SEALED STATIC STRUCT UNSAFE VIRTUAL COMMA
 
 %right ASSIGN ADD_ASSIGN DIV_ASSIGN MOD_ASSIGN MUL_ASSIGN SUB_ASSIGN BIT_OR_ASSIGN BIT_AND_ASSIGN BIT_XOR_ASSIGN RIGHT_SHIFT_ASSIGN LEFT_SHIFT_ASSIGN
 %left OR
@@ -54,19 +55,19 @@ obj_decl_list:
 /* Useful rules: */
 scope: PRIVATE | PUBLIC | PROTECTED | INTERNAL | PROTECTED INTERNAL;
 modifier_list: modifier_list modifier | modifier;
-modifier: STATIC | CONST | OVERRIDE | VIRTUAL | READONLY | REF | OUT | NEW | ABSTRACT | EXTERN | UNSAFE | PARAMS | EVENT | IMPLICIT | EXPLICIT | SEALED;
+modifier: STATIC | CONST | OVERRIDE | VIRTUAL | READONLY | REF | OUT | NEW | ABSTRACT | EXTERN | UNSAFE | PARAMS | EVENT | IMPLICIT | EXPLICIT | SEALED | DELEGATE %prec LOW;
 
 /* Type definition rules: */
-type: simple_type | nullable_type | matrix_type | IDENTIFIER %prec LOW | OBJECT;
+type: simple_type | nullable_type | matrix_type %prec LOW | IDENTIFIER %prec LOW | OBJECT;
 nullable_type: simple_type QMARK | IDENTIFIER QMARK %prec LOW;
 simple_type: BOOL_TYPE | numeric_type | STRING_TYPE;
 numeric_type: integer_type | floating_type | DECIMAL_TYPE;
 integer_type: SBYTE_TYPE | BYTE_TYPE | SHORT_TYPE | USHORT_TYPE | INT_TYPE | UINT_TYPE | LONG_TYPE | ULONG_TYPE | CHAR_TYPE;
 floating_type: FLOAT_TYPE | DOUBLE_TYPE;
 matrix_type:
-    type START_BRCKT END_BRCKT %prec LOW |
-    type START_BRCKT dimensions_def END_BRCKT %prec LOW |
-    type START_BRCKT dimensions_undef END_BRCKT %prec LOW;
+    type START_BRCKT END_BRCKT |
+    type START_BRCKT dimensions_def END_BRCKT |
+    type START_BRCKT dimensions_undef END_BRCKT;
 dimensions_def: dimensions_def COMMA numeric_val | numeric_val;
 dimensions_undef: dimensions_undef COMMA | %empty %prec LOW;
 
@@ -166,7 +167,7 @@ enum_decl:
     ENUM IDENTIFIER START_CURLY enum_list END_CURLY;
 enum_list:
     enum_list COMMA IDENTIFIER |
-    enum_list COMMA IDENTIFIER ASSIGN value %prec HIGHER|
+    enum_list COMMA IDENTIFIER ASSIGN value %prec HIGH|
     IDENTIFIER |
     IDENTIFIER ASSIGN value;
 
@@ -188,7 +189,7 @@ enum_list:
 // attr_decl_statement ali embaixo.
 
 /* Statement rules: */
-statement_list: statement_list statement %prec HIGHER | statement | %empty %prec LOW;
+statement_list: statement_list statement | statement %prec HIGHER | %empty %prec LOW;
 statement: obj_decl | method_decl_statement | operator_overloading | attr_decl_statement | var_decl_statement | if_else_statement | switch_statement | while_statement | do_while_statement | for_statement | foreach_statement | return_statement | checked_scope | unchecked_scope | unsafe_scope | fixed_scope | label | go_to_statement | expression SEMI | SEMI;
 
 /* Method declaration statement rules: */
@@ -234,13 +235,6 @@ operator_overloading:
     modifier_list scope VOID OPERATOR operator START_PAR parameter_list END_PAR method_body %prec LOW |
     modifier_list scope type OPERATOR operator START_PAR END_PAR method_body %prec LOW |
     modifier_list scope type OPERATOR operator START_PAR parameter_list END_PAR method_body %prec LOW;
-
-/* Delegate declaration statement rules: */
-delegate_decl_statement:
-    modifier_list DELEGATE type IDENTIFIER START_PAR parameter_list END_PAR |
-    DELEGATE type IDENTIFIER START_PAR parameter_list END_PAR |
-    modifier_list DELEGATE type IDENTIFIER START_PAR END_PAR |
-    DELEGATE type IDENTIFIER START_PAR END_PAR;
 
 /* return statement: */
 return_statement: RETURN expression;
@@ -333,7 +327,7 @@ label: IDENTIFIER COLON %prec LOW;
 go_to_statement: GOTO IDENTIFIER;
 
 /* Expression rules: */
-expression: value | START_PAR expression END_PAR %prec HIGH | assignment_expressions | unary_operations | binary_operations | ternary_operations | method_invoking | attr_access | obj_instancing | matrix_indexing | matrix_instancing | CONTINUE | BREAK %prec HIGH;
+expression: value | START_PAR expression END_PAR %prec INNER_PAR | assignment_expressions %prec LOW | unary_operations | binary_operations | ternary_operations %prec TERNARY_IF | method_invoking | attr_access | obj_instancing | matrix_indexing | matrix_instancing %prec HIGHER | CONTINUE | BREAK %prec HIGH;
 
 /* Object instancing expression rules: */
 obj_instancing:
@@ -364,9 +358,9 @@ unary_operations:
     SUB expression %prec HIGH |
     BIT_NOT expression %prec HIGH |
     NOT expression %prec HIGH |
-    TYPEOF START_PAR expression END_PAR |
-    SIZEOF START_PAR expression END_PAR |
-    STACKALLOC START_PAR expression END_PAR;
+    TYPEOF START_PAR expression END_PAR %prec HIGH |
+    SIZEOF START_PAR expression END_PAR %prec HIGH |
+    STACKALLOC START_PAR expression END_PAR %prec HIGH;
 
 /* Binary operations expression rules: */
 binary_operations:
@@ -400,13 +394,13 @@ ternary_operations:
 /* variable and data accessing expression rules: */
 attr_access:
     IDENTIFIER DOT attr_access %prec HIGH |
-    IDENTIFIER %prec HIGHER |
-    THIS DOT attr_access |
-    BASE DOT attr_access;
+    IDENTIFIER %prec HIGH |
+    THIS DOT attr_access %prec HIGH |
+    BASE DOT attr_access %prec HIGH;
 
 /* Method invoking operations expression rules: */
 method_invoking:
-    attr_access START_PAR argument_list END_PAR |
+    attr_access START_PAR argument_list END_PAR;
 
 argument_list:
     argument_list argument |
@@ -416,9 +410,9 @@ argument_list:
 argument: expression | modifier expression;
 
 /* Vector and matrix expressions: */
-matrix_indexing: expression START_BRCKT dimensions_def END_BRCKT %prec HIGHER;
+matrix_indexing: expression START_BRCKT dimensions_def END_BRCKT %prec HIGH;
 
-matrix_instancing: NEW type START_BRCKT dimensions_def END_BRCKT %prec HIGHER;
+matrix_instancing: NEW type START_BRCKT dimensions_def END_BRCKT;
 
 %%
 
