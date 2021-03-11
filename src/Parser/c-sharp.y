@@ -44,7 +44,7 @@ extern int yylineno;
 %%
 
 /* Program rule: */
-program: obj_decl_list;
+program: obj_decl_list END_OF_FILE;
 
 /* Object declaration rules: */
 obj_decl_list: 
@@ -167,7 +167,7 @@ enum_decl:
     ENUM IDENTIFIER START_CURLY enum_list END_CURLY;
 enum_list:
     enum_list COMMA IDENTIFIER |
-    enum_list COMMA IDENTIFIER ASSIGN value %prec HIGH|
+    enum_list COMMA IDENTIFIER ASSIGN value %prec HIGH |
     IDENTIFIER |
     IDENTIFIER ASSIGN value;
 
@@ -321,7 +321,7 @@ label: IDENTIFIER COLON %prec LOW;
 go_to_statement: GOTO IDENTIFIER;
 
 /* Expression rules: */
-expression: value | START_PAR expression END_PAR %prec INNER_PAR | assignment_expressions %prec LOW | unary_operations | binary_operations | ternary_operations %prec TERNARY_IF | method_invoking | attr_access %prec LOW| obj_instancing | matrix_indexing | matrix_instancing %prec HIGHER | CONTINUE | BREAK %prec HIGH;
+expression: value | START_PAR expression END_PAR %prec INNER_PAR | assignment_expressions | unary_operations | binary_operations | ternary_operations %prec TERNARY_IF | method_invoking | attr_access | obj_instancing | matrix_indexing | matrix_instancing %prec HIGHER | CONTINUE | BREAK %prec HIGH;
 
 /* Object instancing expression rules: */
 obj_instancing:
@@ -387,10 +387,10 @@ ternary_operations:
 
 /* variable and data accessing expression rules: */
 attr_access:
-    IDENTIFIER DOT attr_access %prec HIGH |
-    IDENTIFIER %prec HIGH |
-    THIS DOT attr_access %prec HIGH |
-    BASE DOT attr_access %prec HIGH;
+    IDENTIFIER DOT attr_access %prec HIGHER |
+    IDENTIFIER %prec HIGHER |
+    THIS DOT attr_access %prec HIGHER |
+    BASE DOT attr_access %prec HIGHER;
 
 /* Method invoking operations expression rules: */
 method_invoking:
