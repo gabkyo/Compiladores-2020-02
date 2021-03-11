@@ -114,7 +114,6 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 "continue" { printf("CONTINUE\n");return CONTINUE; }
 "decimal" { printf("DECIMAL_TYPE\n");return DECIMAL_TYPE; }
 "default" { printf("DEFAULT\n");return DEFAULT; }
-"delegate" { printf("DELEGATE\n");return DELEGATE; }
 "do" { printf("DO\n");return DO; }
 "double" { printf("DOUBLE_TYPE\n");return DOUBLE_TYPE; }
 "else" { printf("ELSE\n");return ELSE; }
@@ -123,7 +122,6 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 "explicit" { printf("EXPLICIT\n");return EXPLICIT; }
 "extern" { printf("EXTERN\n");return EXTERN; }
 "false" { printf("FALSE_VAL\n");return FALSE_VAL; }
-"fixed" { printf("FIXED\n");return FIXED; }
 "float" { printf("FLOAT_TYPE\n");return FLOAT_TYPE; }
 "for" { printf("FOR\n");return FOR; }
 "foreach" { printf("FOREACH\n");return FOREACH; }
@@ -164,7 +162,6 @@ hexadecimal_escape_sequence "\\x"([0-9]|[a-f]|[A-F])([0-9]|[a-f]|[A-F])?([0-9]|[
 "uint" { printf("UINT_TYPE\n");return UINT_TYPE; }
 "ulong" { printf("ULONG_TYPE\n");return ULONG_TYPE; }
 "unchecked" { printf("UNCHECKED\n");return UNCHECKED; }
-"unsafe" { printf("UNSAFE\n");return UNSAFE; }
 "ushort" { printf("USHORT_TYPE\n");return USHORT_TYPE; }
 "virtual" { printf("VIRTUAL\n");return VIRTUAL; }
 "void" { printf("VOID\n");return VOID; }

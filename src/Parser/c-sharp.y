@@ -13,7 +13,7 @@ extern int yylineno;
 
 %}
 
-%token IDENTIFIER START_PAR END_PAR START_CURLY END_CURLY START_BRCKT END_BRCKT ADD SUB DIV MUL MOD NOT QMARK BIT_XOR COLON SEMI COMMA DOT ASSIGN LESS_THEN GREATER_THEN BIT_AND BIT_OR BIT_NOT EQ GEQ LEQ NOT_EQ ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN BIT_AND_ASSIGN BIT_OR_ASSIGN BIT_XOR_ASSIGN LEFT_SHIFT RIGHT_SHIFT AND OR DOUBLE_QMARK INCREMENT DECREMENT LAMBDA LEFT_SHIFT_ASSIGN RIGHT_SHIFT_ASSIGN ABSTRACT AS BASE BOOL_TYPE BREAK BYTE_TYPE CASE CHAR_TYPE CHECKED CLASS CONST CONTINUE DECIMAL_TYPE DEFAULT DELEGATE DO DOUBLE_TYPE ELSE ENUM EVENT EXPLICIT EXTERN FALSE_VAL FIXED FLOAT_TYPE FOR FOREACH GOTO IF IMPLICIT IN INT_TYPE INTERFACE INTERNAL IS LONG_TYPE NEW NULL_VALUE OBJECT OPERATOR OUT OVERRIDE PARAMS PRIVATE PROTECTED PUBLIC READONLY REF RETURN SBYTE_TYPE SEALED SHORT_TYPE SIZEOF STACKALLOC STATIC STRING_TYPE STRUCT SWITCH THIS TRUE_VAL TYPEOF UINT_TYPE ULONG_TYPE UNCHECKED UNSAFE USHORT_TYPE VIRTUAL VOID WHILE INT_VAL UINT_VAL LONG_VAL ULONG_VAL FLOAT_VAL DOUBLE_VAL DECIMAL_VAL CHAR_VAL ENTER END_OF_FILE BYTE_VAL SBYTE_VAL SHORT_VAL USHORT_VAL STRING_VAL
+%token IDENTIFIER START_PAR END_PAR START_CURLY END_CURLY START_BRCKT END_BRCKT ADD SUB DIV MUL MOD NOT QMARK BIT_XOR COLON SEMI COMMA DOT ASSIGN LESS_THEN GREATER_THEN BIT_AND BIT_OR BIT_NOT EQ GEQ LEQ NOT_EQ ADD_ASSIGN SUB_ASSIGN MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN BIT_AND_ASSIGN BIT_OR_ASSIGN BIT_XOR_ASSIGN LEFT_SHIFT RIGHT_SHIFT AND OR DOUBLE_QMARK INCREMENT DECREMENT LAMBDA LEFT_SHIFT_ASSIGN RIGHT_SHIFT_ASSIGN ABSTRACT AS BASE BOOL_TYPE BREAK BYTE_TYPE CASE CHAR_TYPE CHECKED CLASS CONST CONTINUE DECIMAL_TYPE DEFAULT DO DOUBLE_TYPE ELSE ENUM EVENT EXPLICIT EXTERN FALSE_VAL FLOAT_TYPE FOR FOREACH GOTO IF IMPLICIT IN INT_TYPE INTERFACE INTERNAL IS LONG_TYPE NEW NULL_VALUE OBJECT OPERATOR OUT OVERRIDE PARAMS PRIVATE PROTECTED PUBLIC READONLY REF RETURN SBYTE_TYPE SEALED SHORT_TYPE SIZEOF STACKALLOC STATIC STRING_TYPE STRUCT SWITCH THIS TRUE_VAL TYPEOF UINT_TYPE ULONG_TYPE UNCHECKED USHORT_TYPE VIRTUAL VOID WHILE INT_VAL UINT_VAL LONG_VAL ULONG_VAL FLOAT_VAL DOUBLE_VAL DECIMAL_VAL CHAR_VAL ENTER END_OF_FILE BYTE_VAL SBYTE_VAL SHORT_VAL USHORT_VAL STRING_VAL
 
 // EZ: Criando pelo menos dois níveis de precedência para indicar nas regras
 // com conflito de Shift/Reduce.
@@ -21,7 +21,7 @@ extern int yylineno;
 %precedence LOW
 %precedence TERNARY_IF
 // Prioridade alta. Podemos colocar todos os tokens em conflito aqui.
-%precedence INNER_PAR ELSE ABSTRACT CLASS CONST ENUM EVENT EXPLICIT EXTERN IMPLICIT INTERFACE INTERNAL NEW OUT OVERRIDE PARAMS PRIVATE PROTECTED PUBLIC READONLY REF SEALED STATIC STRUCT UNSAFE VIRTUAL COMMA
+%precedence INNER_PAR ELSE ABSTRACT CLASS CONST ENUM EVENT EXPLICIT EXTERN IMPLICIT INTERFACE INTERNAL NEW OUT OVERRIDE PARAMS PRIVATE PROTECTED PUBLIC READONLY REF SEALED STATIC STRUCT VIRTUAL COMMA
 
 %right ASSIGN ADD_ASSIGN DIV_ASSIGN MOD_ASSIGN MUL_ASSIGN SUB_ASSIGN BIT_OR_ASSIGN BIT_AND_ASSIGN BIT_XOR_ASSIGN RIGHT_SHIFT_ASSIGN LEFT_SHIFT_ASSIGN
 %left OR
@@ -48,14 +48,14 @@ program: obj_decl_list;
 
 /* Object declaration rules: */
 obj_decl_list: 
-    obj_decl_list obj_decl |
-    obj_decl |
+    obj_decl_list obj_decl %prec HIGH |
+    obj_decl %prec HIGH |
     %empty %prec LOW;
 
 /* Useful rules: */
 scope: PRIVATE | PUBLIC | PROTECTED | INTERNAL | PROTECTED INTERNAL;
 modifier_list: modifier_list modifier | modifier;
-modifier: STATIC | CONST | OVERRIDE | VIRTUAL | READONLY | REF | OUT | NEW | ABSTRACT | EXTERN | UNSAFE | PARAMS | EVENT | IMPLICIT | EXPLICIT | SEALED | DELEGATE %prec LOW;
+modifier: STATIC | CONST | OVERRIDE | VIRTUAL | READONLY | REF | OUT | NEW | ABSTRACT | EXTERN | PARAMS | EVENT | IMPLICIT | EXPLICIT | SEALED;
 
 /* Type definition rules: */
 type: simple_type | nullable_type | matrix_type %prec LOW | IDENTIFIER %prec LOW | OBJECT;
@@ -190,7 +190,7 @@ enum_list:
 
 /* Statement rules: */
 statement_list: statement_list statement | statement %prec HIGHER | %empty %prec LOW;
-statement: obj_decl | method_decl_statement | operator_overloading | attr_decl_statement | var_decl_statement | if_else_statement | switch_statement | while_statement | do_while_statement | for_statement | foreach_statement | return_statement | checked_scope | unchecked_scope | unsafe_scope | fixed_scope | label | go_to_statement | expression SEMI | SEMI;
+statement: obj_decl | method_decl_statement | operator_overloading | attr_decl_statement | var_decl_statement | if_else_statement | switch_statement | while_statement | do_while_statement | for_statement | foreach_statement | return_statement | checked_scope | unchecked_scope | label | go_to_statement | expression SEMI | SEMI;
 
 /* Method declaration statement rules: */
 method_decl_statement:
@@ -254,7 +254,6 @@ var_decl_statement:
 // é necessário que a primeira derivação sempre faz mais sentido. Neste caso,
 // basta retirar a regra abaixo. Isso elimina 85 conflitos de R/R de uma vez... :)
 attr_decl_statement:
-    //var_decl_statement |
     scope type id_list SEMI |
     modifier_list scope type id_list SEMI |
     scope modifier_list type id_list SEMI;
@@ -317,17 +316,12 @@ unchecked_scope:
     UNCHECKED START_PAR expression END_PAR |
     UNCHECKED START_CURLY statement_list END_CURLY;
 
-/* Unsafe scope statements: */
-unsafe_scope: UNSAFE START_CURLY statement_list END_CURLY;
-
-fixed_scope: FIXED START_PAR expression END_PAR START_CURLY statement_list END_CURLY;
-
 /* goto and label statements: */
 label: IDENTIFIER COLON %prec LOW;
 go_to_statement: GOTO IDENTIFIER;
 
 /* Expression rules: */
-expression: value | START_PAR expression END_PAR %prec INNER_PAR | assignment_expressions %prec LOW | unary_operations | binary_operations | ternary_operations %prec TERNARY_IF | method_invoking | attr_access | obj_instancing | matrix_indexing | matrix_instancing %prec HIGHER | CONTINUE | BREAK %prec HIGH;
+expression: value | START_PAR expression END_PAR %prec INNER_PAR | assignment_expressions %prec LOW | unary_operations | binary_operations | ternary_operations %prec TERNARY_IF | method_invoking | attr_access %prec LOW| obj_instancing | matrix_indexing | matrix_instancing %prec HIGHER | CONTINUE | BREAK %prec HIGH;
 
 /* Object instancing expression rules: */
 obj_instancing:
